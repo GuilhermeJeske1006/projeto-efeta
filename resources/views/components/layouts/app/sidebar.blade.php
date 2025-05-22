@@ -15,6 +15,27 @@
                 <flux:navlist.group :heading="__('Platform')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                 </flux:navlist.group>
+                <flux:navlist.group :heading="__('Pessoas')" class="grid">
+                    <flux:navlist.item icon="user" :href="route('servos.index')" :current="request()->routeIs('servos.index')" wire:navigate>{{ __('Servos') }}</flux:navlist.item>
+                    <flux:navlist.item icon="home" :href="route('retirantes.index')" :current="request()->routeIs('retirantes.index')" wire:navigate>{{ __('Retirantes') }}</flux:navlist.item>
+
+                </flux:navlist.group>
+                <flux:navlist.group :heading="__('Retiro')" class="grid">
+                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dados retiro') }}</flux:navlist.item>
+                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Servos') }}</flux:navlist.item>
+                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Retirantes') }}</flux:navlist.item>
+                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Quadrante') }}</flux:navlist.item>
+
+                    <flux:dropdown>
+                        <flux:navbar.item icon="home"  icon:trailing="chevron-down">Account</flux:navbar.item>
+                        <flux:navmenu>
+                            <flux:navmenu.item href="#">Profile</flux:navmenu.item>
+                            <flux:navmenu.item href="#">Settings</flux:navmenu.item>
+                            <flux:navmenu.item href="#">Billing</flux:navmenu.item>
+                        </flux:navmenu>
+                    </flux:dropdown>
+
+                </flux:navlist.group>
             </flux:navlist>
 
             <flux:spacer />
