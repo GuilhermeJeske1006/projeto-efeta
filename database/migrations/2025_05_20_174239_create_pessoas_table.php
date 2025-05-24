@@ -13,14 +13,14 @@ return new class () extends Migration {
         Schema::create('pessoas', function (Blueprint $table) {
             $table->id();
             $table->string('nome');
-            $table->string('email')->unique();
+            $table->string('email')->nullable();
             $table->foreignId('tipo_pessoa_id')->constrained('tipo_pessoas')->onDelete('cascade');
             $table->boolean('is_problema_saude')->default(false);
             $table->text('descricao')->nullable();
             $table->string('genero')->default('masculino');
             $table->string('estado_civil')->default('solteiro');
             $table->boolean('ja_trabalhou')->default(false);
-            $table->string('cpf')->unique();
+            $table->string('cpf')->nullable();
             $table->date('data_nascimento')->nullable();
             $table->timestamps();
         });

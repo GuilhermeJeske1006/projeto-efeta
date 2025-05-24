@@ -176,10 +176,19 @@ $delete = function ($id) {
                         <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->genero }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->estado_civil }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->cpf }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            {{-- <a href="{{ route('pessoas.show', $pessoa) }}" class="text-blue-600 hover:text-blue-900 mr-3">Ver</a>
-                            <a href="{{ route('pessoas.edit', $pessoa) }}" class="text-green-600 hover:text-green-900 mr-3">Editar</a> --}}
-                            <button wire:click="delete({{ $pessoa->id }})" class="text-red-600 hover:text-red-900">Excluir</button>
+                        <td class="px-6 py-4 whitespace-nowrap flex items-center">
+                            <a href="{{ route('servos.show', $pessoa) }}" class="text-blue-600 hover:text-blue-900 mr-3">
+                                <flux:icon.eye/>   
+                         </a>
+                            <a href="{{ route('servos.edit', $pessoa) }}" class="text-green-600 hover:text-green-900 mr-3">
+                                <flux:icon.pencil/>   
+
+                            </a>
+                            <button wire:click="delete({{ $pessoa->id }})" class="text-red-600 hover:text-red-900">
+
+                                <flux:icon.trash/>   
+
+                            </button>
                         </td>
                     </tr>
                 @endforeach

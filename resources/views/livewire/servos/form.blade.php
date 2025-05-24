@@ -1,12 +1,16 @@
 <?php
-
+use App\Models\Pessoa;
+use App\Models\Endereco;
+use App\Models\Telefone;
+use App\Models\TipoPessoa;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use function Livewire\Volt\{state, rules, mount, updated};
-use function Livewire\Volt\{on};
+use function Livewire\Volt\{state, rules, mount, computed};
+use Livewire\WithFileUploads;
 
 // Define state properties
 state([
-    // Form data
+    // Pessoa data
     'nome' => '',
     'cpf' => '',
     'data_nascimento' => '',
@@ -17,6 +21,8 @@ state([
     'ja_trabalhou' => false,
     'genero' => '',
     'estado_civil' => '',
+
+    // Endereço data
     'logradouro' => '',
     'numero' => '',
     'complemento' => '',
@@ -25,22 +31,26 @@ state([
     'estado' => '',
     'cep' => '',
     'pais' => 'Brasil',
+
+    'dados' => [],
+
+    // Telefones data
     'telefones' => [],
 
-    // Select options
-    'tipos_pessoa' => [],
-    'generos' => [],
-    'estados_civis' => [],
-    'tipos_telefone' => [],
-    'estados' => [],
+    // Select lists
+    'tiposPessoa' => [],
+    'generos' => ['Masculino', 'Feminino', 'Outro'],
+    'estadosCivis' => ['Solteiro(a)', 'Casado(a)', 'Divorciado(a)', 'Viúvo(a)', 'União Estável'],
+    'tiposTelefone' => ['Celular', 'Residencial', 'Comercial', 'Outro'],
+    'estados' => ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'],
 ]);
 
 // Define validation rules
 rules([
     'nome' => ['required', 'string', 'max:255'],
-    'cpf' => ['required', 'string', 'size:14', 'unique:pessoas,cpf'],
+    'cpf' => ['required', 'string', 'size:14', 'regex:/^\d{3}\.\d{3}\.\d{3}-\d{2}$/'],
     'data_nascimento' => ['required', 'date', 'before:today'],
-    'email' => ['required', 'email', 'max:255', 'unique:pessoas,email'],
+    'email' => ['required', 'email', 'max:255'],
     'is_problema_saude' => ['boolean'],
     'descricao' => ['nullable', 'string', 'max:1000'],
     'ja_trabalhou' => ['boolean'],
@@ -54,14 +64,13 @@ rules([
     'cidade' => ['required', 'string', 'max:100'],
     'cep' => ['required', 'string', 'size:9'],
 
-    'telefones.*.numero' => ['required', 'string', 'min:14', 'max:15'],
-    'telefones.*.tipo' => ['required', 'string'],
+
+    'telefones.*.numero' => ['nullable', 'string', 'min:14', 'max:15'],
+    'telefones.*.tipo' => ['nullable', 'string'],
     'telefones.*.nome_pessoa' => ['nullable', 'string', 'max:100'],
-    'telefones' => function ($attribute, $value, $fail) {
-        if (!collect($value)->contains('is_principal', true)) {
-            $fail('Pelo menos um telefone deve ser marcado como principal.');
-        }
-    },
+    'telefones.*.is_principal' => ['boolean'],
+    
+
 ])->messages([
     'nome.required' => 'O nome é obrigatório',
     'cpf.required' => 'O CPF é obrigatório',
@@ -84,33 +93,63 @@ rules([
 
     'telefones.*.numero.required' => 'O número de telefone é obrigatório',
     'telefones.*.numero.min' => 'O telefone deve estar no formato correto',
-    'telefones.*.tipo.required' => 'O tipo de telefone é obrigatório',
+    'telefones.*.numero.max' => 'O telefone deve ter no máximo 15 caracteres',
+
 ]);
 
 // Mount component
 mount(function () {
-    // Initialize phone array if empty
-    if (empty($this->telefones)) {
-        $this->telefones = [['numero' => '', 'tipo' => 'Celular', 'nome_pessoa' => '', 'is_principal' => false]];
-    }
+    // Initialize with one empty phone
+    $this->telefones = [['numero' => '', 'tipo' => 'Celular', 'nome_pessoa' => '', 'is_principal' => false]];
+
+    $this->nome = $this->dados['nome'] ?? '';
+    $this->cpf = $this->dados['cpf'] ?? '';
+    $this->data_nascimento = $this->dados['data_nascimento'] ?? '';
+    $this->email = $this->dados['email'] ?? '';
+    $this->ja_trabalhou = $this->dados['ja_trabalhou'] ?? false;
+    $this->is_problema_saude = $this->dados['is_problema_saude'] ?? false;
+    $this->descricao = $this->dados['descricao'] ?? '';
+    $this->logradouro = $this->dados['logradouro'] ?? '';
+    $this->numero = $this->dados['numero'] ?? '';
+    $this->complemento = $this->dados['complemento'] ?? '';
+    $this->bairro = $this->dados['bairro'] ?? '';
+    $this->cidade = $this->dados['cidade'] ?? '';
+    $this->estado = $this->dados['estado'] ?? 'SC';
+    $this->cep = $this->dados['cep'] ?? '';
+    $this->pais = $this->dados['pais'] ?? 'Brasil';
+    $this->telefones = $this->dados['telefones'] ?? [['numero' => '', 'tipo' => 'Celular', 'nome_pessoa' => '', 'is_principal' => false]];
+    $this->is_principal = $this->dados['is_principal'] ?? false;
+    $this->telefone = $this->dados['telefone'] ?? '';
+    $this->tipo_pessoa_id = $this->dados['tipo_pessoa_id'] ?? 1;
+
+    // Load person types
+    $this->tiposPessoa = TipoPessoa::all();
+
+    $this->tipo_pessoa_id = $this->tiposPessoa->first()->id ?? null;
+    $this->genero = $this->generos[0];
+    $this->estado_civil = $this->estadosCivis[0];
 });
 
-// Add phone number
 $adicionarTelefone = function () {
-    $this->telefones[] = ['numero' => '', 'tipo' => 'Celular', 'nome_pessoa' => '', 'is_principal' => false];
+    // Add a new phone number
+    if(count($this->telefones) == 0){
+        $this->telefones[] = ['numero' => '', 'tipo' => 'Celular', 'nome_pessoa' => '', 'is_principal' => true];
+    } else {
+        $this->telefones[] = ['numero' => '', 'tipo' => 'Celular', 'nome_pessoa' => '', 'is_principal' => false];
+    }
 };
 
-// Remove phone number
+// Remove a phone number
 $removerTelefone = function ($index) {
     if (count($this->telefones) > 1) {
         unset($this->telefones[$index]);
         $this->telefones = array_values($this->telefones);
-    }
+    } 
 };
 
-// Toggle health problem
 $openProblema = function () {
-    $this->is_problema_saude = !$this->is_problema_saude;
+    // Open the health problem description field
+    $this->is_problema_saude ? ($this->is_problema_saude = true) : ($this->is_problema_saude = false);
 };
 
 // Lookup address by zipcode
@@ -143,12 +182,40 @@ $buscarCep = function () {
     }
 };
 
-// Format and validate CPF
-$formatarEValidarCpf = function () {
-    // Remove non-numeric characters
+// Format CPF
+$updatedCpf = function () {
     $cpf = preg_replace('/[^0-9]/', '', $this->cpf);
 
-    // Format CPF
+    if (strlen($cpf) <= 11) {
+        $formatted = '';
+
+        if (strlen($cpf) > 3) {
+            $formatted .= substr($cpf, 0, 3) . '.';
+
+            if (strlen($cpf) > 6) {
+                $formatted .= substr($cpf, 3, 3) . '.';
+
+                if (strlen($cpf) > 9) {
+                    $formatted .= substr($cpf, 6, 3) . '-' . substr($cpf, 9, 2);
+                } else {
+                    $formatted .= substr($cpf, 6);
+                }
+            } else {
+                $formatted .= substr($cpf, 3);
+            }
+        } else {
+            $formatted = $cpf;
+        }
+
+        $this->cpf = $formatted;
+    }
+};
+
+$formatarEValidarCpf = function () {
+    // Remove caracteres não numéricos
+    $cpf = preg_replace('/[^0-9]/', '', $this->cpf);
+
+    // Formata o CPF
     if (strlen($cpf) <= 11) {
         $formatted = '';
 
@@ -173,9 +240,9 @@ $formatarEValidarCpf = function () {
         $this->cpf = $formatted;
     }
 
-    // Validate CPF if it has 11 digits
+    // Se o CPF tem 11 dígitos, valida
     if (strlen($cpf) === 11) {
-        // Check for known invalid CPFs
+        // Verifica CPFs inválidos conhecidos
         $invalidCpfs = ['00000000000', '11111111111', '22222222222', '33333333333', '44444444444', '55555555555', '66666666666', '77777777777', '88888888888', '99999999999'];
 
         if (in_array($cpf, $invalidCpfs)) {
@@ -183,7 +250,7 @@ $formatarEValidarCpf = function () {
             return;
         }
 
-        // Validate first check digit
+        // Valida o primeiro dígito verificador
         $sum = 0;
         for ($i = 0; $i < 9; $i++) {
             $sum += intval($cpf[$i]) * (10 - $i);
@@ -196,7 +263,7 @@ $formatarEValidarCpf = function () {
             return;
         }
 
-        // Validate second check digit
+        // Valida o segundo dígito verificador
         $sum = 0;
         for ($i = 0; $i < 10; $i++) {
             $sum += intval($cpf[$i]) * (11 - $i);
@@ -209,20 +276,19 @@ $formatarEValidarCpf = function () {
             return;
         }
 
-        // CPF is valid
+        // Se chegou até aqui, o CPF é válido
         $this->resetErrorBag('cpf');
     } elseif (strlen($cpf) > 0) {
-        // Don't validate incomplete CPF
+        // Se já tem algum dígito mas não tem os 11, não valida ainda
         $this->resetErrorBag('cpf');
     }
 };
 
-// Format and validate phone
 $formatarEValidarTelefone = function ($index) {
-    // Remove non-numeric characters
+    // Remove caracteres não numéricos
     $telefone = preg_replace('/[^0-9]/', '', $this->telefones[$index]['numero']);
 
-    // Format phone
+    // Formata o telefone
     if (strlen($telefone) <= 11) {
         $formatted = '';
 
@@ -230,10 +296,10 @@ $formatarEValidarTelefone = function ($index) {
             $formatted = '(' . substr($telefone, 0, 2) . ')';
 
             if (strlen($telefone) > 7) {
-                // 9-digit format: (XX) XXXXX-XXXX
+                // Formato com 9 dígitos: (XX) XXXXX-XXXX
                 $formatted .= ' ' . substr($telefone, 2, 5) . '-' . substr($telefone, 7);
             } elseif (strlen($telefone) > 6) {
-                // 8-digit format: (XX) XXXX-XXXX
+                // Formato com 8 dígitos: (XX) XXXX-XXXX
                 $formatted .= ' ' . substr($telefone, 2, 4) . '-' . substr($telefone, 6);
             } else {
                 $formatted .= ' ' . substr($telefone, 2);
@@ -245,7 +311,7 @@ $formatarEValidarTelefone = function ($index) {
         $this->telefones[$index]['numero'] = $formatted;
     }
 
-    // Validate phone
+    // Valida o telefone
     if (strlen($telefone) < 10) {
         if (strlen($telefone) > 0) {
             $this->addError('telefones.' . $index . '.numero', 'Telefone deve ter pelo menos 10 dígitos.');
@@ -255,48 +321,68 @@ $formatarEValidarTelefone = function ($index) {
     }
 };
 
-// Handle phone number updates
-updated(['telefones.*.numero' => function ($value, $key) {
-    // Extract index from key
-    preg_match('/telefones\.(\d+)\.numero/', $key, $matches);
-    
-    if (isset($matches[1])) {
-        $index = $matches[1];
-        $this->formatarEValidarTelefone($index);
+$definirPrincipal = function ($index) {
+    foreach ($this->telefones as $i => &$telefone) {
+        // Define como principal apenas o telefone do índice selecionado
+        $telefone['is_principal'] = ($i === $index);
     }
-}]);
+    unset($telefone); // Evita problemas com referência persistente
+};
 
-// Listen for validation from parent
-on(['validate-form' => function () {
+
+
+$updatedTelefones = function ($value, $key) {
+    if (str_contains($key, 'numero')) {
+        // Extrair o índice do array de telefones
+        preg_match('/telefones\.(\d+)\.numero/', $key, $matches);
+
+        if (isset($matches[1])) {
+            $index = $matches[1];
+            $this->formatarEValidarTelefone($index);
+        }
+    }
+};
+
+ 
+
+
+$enviarDados = function () {
+
     $this->validate();
 
-    return dd('Formulário validado com sucesso!');
-    // Envia os dados validados para o pai
-    $this->dispatch('form-validated', [
-        'data' => [
-            'nome' => $this->nome,
-            'cpf' => $this->cpf,
-            'data_nascimento' => $this->data_nascimento,
-            'email' => $this->email,
-            'tipo_pessoa_id' => $this->tipo_pessoa_id,
-            'is_problema_saude' => $this->is_problema_saude,
-            'descricao' => $this->descricao,
-            'ja_trabalhou' => $this->ja_trabalhou,
-            'genero' => $this->genero,
-            'estado_civil' => $this->estado_civil,
-            'logradouro' => $this->logradouro,
-            'numero' => $this->numero,
-            'complemento' => $this->complemento,
-            'bairro' => $this->bairro,
-            'cidade' => $this->cidade,
-            'estado' => $this->estado,
-            'cep' => $this->cep,
-            'pais' => $this->pais,
-            'telefones' => $this->telefones,
-        ]
+    
+    // Emite um evento com todos os dados do formulário
+    $teste = $this->dispatch('dados-formulario', [
+        // Dados da pessoa
+        'nome' => $this->nome,
+        'cpf' => $this->cpf,
+        'data_nascimento' => $this->data_nascimento,
+        'email' => $this->email,
+        'tipo_pessoa_id' => $this->tipo_pessoa_id,
+        'is_problema_saude' => $this->is_problema_saude,
+        'descricao' => $this->descricao,
+        'ja_trabalhou' => $this->ja_trabalhou,
+        'genero' => $this->genero,
+        'estado_civil' => $this->estado_civil,
+        
+        // Dados do endereço
+        'logradouro' => $this->logradouro,
+        'numero' => $this->numero,
+        'complemento' => $this->complemento,
+        'bairro' => $this->bairro,
+        'cidade' => $this->cidade,
+        'estado' => $this->estado,
+        'cep' => $this->cep,
+        'pais' => $this->pais,
+        
+        // Dados dos telefones
+        'telefones' => $this->telefones,
     ]);
-}]);
+
+};
+
 ?>
+<div>
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     <div class="col-span-3">
@@ -337,6 +423,7 @@ on(['validate-form' => function () {
                 </flux:select.option>
             @endforeach
         </flux:select>
+
     </div>
 
     <!-- Estado Civil -->
@@ -345,17 +432,21 @@ on(['validate-form' => function () {
             <flux:select.option value="" disabled>
                 {{ __('Selecione o estado civil') }}
             </flux:select.option>
-            @foreach ($estados_civis as $item)
+            @foreach ($estadosCivis as $item)
                 <flux:select.option value="{{ $item }}">{{ $item }}</flux:select.option>
             @endforeach
         </flux:select>
+
     </div>
+
+    
 
     <!-- Já Trabalhou -->
     <div class="flex items-end">
         <div class="flex items-center h-5">
             <input wire:model="ja_trabalhou" type="checkbox"
-                class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+            class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+            @if($ja_trabalhou) checked @endif>
         </div>
         <div class="ml-3 text-sm">
             <label class="font-medium text-gray-700 dark:text-gray-300">
@@ -364,11 +455,14 @@ on(['validate-form' => function () {
         </div>
     </div>
 
+
     <!-- Problemas de Saúde -->
     <div class="flex items-end">
+
         <div class="flex items-center h-5">
-            <input wire:model="is_problema_saude" wire:click="openProblema" type="checkbox"
-                class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+            <input wire:model="is_problema_saude" wire:change="openProblema" type="checkbox"
+            class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+            @if($is_problema_saude) checked @endif>
         </div>
         <div class="ml-3 text-sm">
             <label class="font-medium text-gray-700 dark:text-gray-300">
@@ -376,6 +470,7 @@ on(['validate-form' => function () {
             </label>
         </div>
     </div>
+
 
     <!-- Descrição de Saúde (condicionalmente exibido) -->
     @if ($is_problema_saude)
@@ -413,24 +508,28 @@ on(['validate-form' => function () {
         <flux:input wire:model="logradouro" :label="__('Logradouro')" type="text" required />
     </div>
 
+    <!-- Número -->
+   
     <!-- Complemento -->
     <div>
         <flux:input wire:model="complemento" :label="__('Complemento')" type="text" />
+
     </div>
 
     <!-- Bairro -->
     <div>
         <flux:input wire:model="bairro" :label="__('Bairro')" type="text" required />
+
     </div>
 
     <!-- Cidade -->
     <div>
         <flux:input wire:model="cidade" :label="__('Cidade')" type="text" required />
+
     </div>
-    
-    <!-- Número -->
     <div>
         <flux:input wire:model="numero" :label="__('Número')" type="text" required />
+
     </div>
 
     <!-- Seção de Telefones -->
@@ -451,12 +550,14 @@ on(['validate-form' => function () {
                 <div>
                     <flux:select wire:model="telefones.{{ $index }}.tipo"
                         :label="__('Tipo')" required>
-                        @foreach ($tipos_telefone as $item)
+                        @foreach ($tiposTelefone as $item)
                             <flux:select.option value="{{ $item }}">{{ $item }}
                             </flux:select.option>
                         @endforeach
                     </flux:select>
+
                 </div>
+                
 
                 <!-- Nome da Pessoa -->
                 <div class="flex items-end space-x-2">
@@ -478,13 +579,18 @@ on(['validate-form' => function () {
                         @endif
                     </div>
                 </div>
-                
-                <!-- Telefone Principal -->
                 <div class="flex items-end">
+
                     <div class="flex items-center h-5">
-                        <input wire:model="telefones.{{ $index }}.is_principal" type="checkbox"
-                            class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                        <input type="checkbox"
+                        wire:model="telefones.{{ $index }}.is_principal"
+                        class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                        wire:click="definirPrincipal({{ $index }})"
+                        @if($telefone['is_principal']) checked @endif
+                        
+                    >
                     </div>
+
                     <div class="ml-3 text-sm">
                         <label class="font-medium text-gray-700 dark:text-gray-300">
                             {{ __('Telefone principal?') }}
@@ -495,10 +601,22 @@ on(['validate-form' => function () {
         @endforeach
 
         <!-- Botão Adicionar Telefone -->
-        <div class="flex justify-end">
+        <div class="flex justify-end mb-3">
             <flux:button type="button" wire:click="adicionarTelefone">
+
                 {{ __('Adicionar Telefone') }}
             </flux:button>
         </div>
     </div>
+
 </div>
+<div class="flex justify-end space-x-2 pt-4 border-t">
+    <flux:button type="button" variant="primary" wire:click="$refresh">
+        {{ __('Cancelar') }}
+    </flux:button>
+    <flux:button type="button" wire:click="enviarDados" variant="primary">
+        {{ __('Enviar Dados') }}
+    </flux:button>
+</div>
+</div>
+

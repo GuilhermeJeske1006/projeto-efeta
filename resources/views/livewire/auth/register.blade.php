@@ -8,7 +8,7 @@ use Illuminate\Validation\Rules;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
-new  class extends Component {
+new #[Layout('components.layouts.auth')]  class extends Component {
     public string $name = '';
     public string $email = '';
     public string $password = '';
@@ -35,18 +35,11 @@ new  class extends Component {
     }
 }; ?>
 
-<section class="w-full">
-    <div class="relative mb-6 w-full">
-        <flux:heading size="xl" level="1">{{ __('Settings') }}</flux:heading>
-        <flux:subheading size="lg" class="mb-6">{{ __('Manage your profile and account settings') }}</flux:subheading>
-        <flux:separator variant="subtle" />
-    </div>
-    
+<div class="flex flex-col gap-6">
+    <x-auth-header :title="__('Log in to your account')" :description="__('Enter your email and password below to log in')" />
+
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
-
-    <div :heading="__('Profile')" :subheading="__('Update your name and email address')">
-        
     <form wire:submit="register" class="flex flex-col w-100 gap-6 justify-content-center">
         <!-- Name -->
         <flux:input wire:model="name" :label="__('Name')" type="text" required autofocus autocomplete="name"
@@ -72,8 +65,4 @@ new  class extends Component {
     </form>
 </div>
 
-    <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-600 dark:text-zinc-400">
-        {{ __('Already have an account?') }}
-        <flux:link :href="route('login')" wire:navigate>{{ __('Log in') }}</flux:link>
-    </div>
-</section>
+</div>

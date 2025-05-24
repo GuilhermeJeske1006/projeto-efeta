@@ -35,6 +35,12 @@ class Pessoa extends Model
     {
         return $this->hasOne(Telefone::class)->where('is_principal', true);
     }
+
+    public function endereco()
+    {
+        return $this->hasOne(Endereco::class);
+    }
+
     
 
     public function tipoPessoa()
