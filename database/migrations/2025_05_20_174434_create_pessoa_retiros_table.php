@@ -15,7 +15,7 @@ return new class () extends Migration {
             $table->foreignId('pessoa_id')->constrained('pessoas')->onDelete('cascade');
             $table->foreignId('retiro_id')->constrained('retiros')->onDelete('cascade');
             $table->foreignId('status_id')->constrained('status_chamados')->onDelete('cascade');
-            $table->foreignId('equipe_id')->constrained('tipo_pessoas')->onDelete('cascade');
+            $table->foreignId('tipo_id')->constrained('tipo_pessoas')->onDelete('cascade');
 
             $table->timestamps();
         });

@@ -21,34 +21,15 @@
 
                 </flux:navlist.group>
                 <flux:navlist.group :heading="__('Retiro')" class="grid">
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dados retiro') }}</flux:navlist.item>
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Servos') }}</flux:navlist.item>
+                    <flux:navlist.item icon="home" :href="route('retiros.index')" :current="request()->routeIs('retiros.index')" wire:navigate>{{ __('Dados retiro') }}</flux:navlist.item>
+                    {{-- <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Servos') }}</flux:navlist.item>
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Retirantes') }}</flux:navlist.item>
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Quadrante') }}</flux:navlist.item>
-
-                    <flux:dropdown>
-                        <flux:navbar.item icon="home"  icon:trailing="chevron-down">Account</flux:navbar.item>
-                        <flux:navmenu>
-                            <flux:navmenu.item href="#">Profile</flux:navmenu.item>
-                            <flux:navmenu.item href="#">Settings</flux:navmenu.item>
-                            <flux:navmenu.item href="#">Billing</flux:navmenu.item>
-                        </flux:navmenu>
-                    </flux:dropdown>
+                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Quadrante') }}</flux:navlist.item> --}}
 
                 </flux:navlist.group>
             </flux:navlist>
 
             <flux:spacer />
-
-            <flux:navlist variant="outline">
-                <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
-                {{ __('Repository') }}
-                </flux:navlist.item>
-
-                <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire" target="_blank">
-                {{ __('Documentation') }}
-                </flux:navlist.item>
-            </flux:navlist>
 
             <!-- Desktop User Menu -->
             <flux:dropdown position="bottom" align="start">

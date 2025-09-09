@@ -26,8 +26,19 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('pessoas/servos', 'servos.index')->name('servos.index');
     Volt::route('pessoas/servos/{id}', 'servos.show')->name('servos.show');
     Volt::route('pessoas/servos/{id}/edit', 'servos.edit')->name('servos.edit');
+
     Volt::route('pessoas/retirante/create', 'retirantes.create')->name('retirantes.create');
     Volt::route('pessoas/retirante', 'retirantes.index')->name('retirantes.index');
+    Volt::route('pessoas/retirante/{id}', 'retirantes.show')->name('retirantes.show');
+    Volt::route('pessoas/retirante/{id}/edit', 'retirantes.edit')->name('retirantes.edit');
+
+    Volt::route('retiros/create', 'retiros.create')->name('retiros.create');
+    Volt::route('retiros', 'retiros.index')->name('retiros.index');
+    Volt::route('retiros/{id}', 'retiros.show')->name('retiros.show');
+    Volt::route('retiros/{id}/edit', 'retiros.edit')->name('retiros.edit');
+
+    Volt::route('servos-retiros/{retiroId}', 'servos-retiros.index')->name('servos-retiros.index');
+
 
 });
 

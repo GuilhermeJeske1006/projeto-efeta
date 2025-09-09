@@ -10,6 +10,7 @@ class PessoaRetiro extends Model
         'pessoa_id',
         'retiro_id',
         'equipe_id',
+        'tipo_id',
         'status_chamado_id',
     ];
 
@@ -27,7 +28,12 @@ class PessoaRetiro extends Model
 
     public function tipoPessoa()
     {
-        return $this->belongsTo(TipoPessoa::class, 'equipe_id');
+        return $this->belongsTo(TipoPessoa::class, 'tipo_id');
+    }
+
+    public function equipe()
+    {
+        return $this->belongsTo(Equipe::class);
     }
 
     public function statusChamado()

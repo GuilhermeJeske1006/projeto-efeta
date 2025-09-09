@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pessoa extends Model
 {
+    use \Illuminate\Database\Eloquent\Factories\HasFactory;
+    
     protected $table = 'pessoas';
 
     protected $fillable = [
