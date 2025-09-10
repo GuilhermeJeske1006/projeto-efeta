@@ -14,28 +14,30 @@ state([
     'search' => '',
     'perPage' => 15,
     'generos' => ['Masculino', 'Feminino', 'Outro'],
-    'ja_trabalhou' => null,
     'genero' => null,
+    'data_nascimento_minima' => null,
+    'data_nascimento_maxima' => null,
     'estado_civil' => null,
     'telefone' => null,
     'nome' => null,
-    
     // Novos campos para funcionalidade
     'showFilters' => false,
     'retiroId' => null, // ID do retiro vindo da URL
     'retiro' => null,   // Objeto do retiro
-    'selectedEquipe' => null,
     'selectedServos' => [],
     'equipes' => [],
     'showSelectionMode' => false,
     'nomeEquipe' => '',
-    'listSelectedEquipes' => []
+    'listSelectedEquipes' => [],
+    'equipe_id' => 14,
 ]);
 
 // Mount - buscar retiro pela URL
 mount(function ($retiroId) {
     $this->retiroId = $retiroId;
     $this->retiro = Retiro::find($retiroId);
+    $this->listSelectedEquipes = $this->servosEquipe->toArray();
+    // $this->listPossiveisRetirantes = $this->getPessoas->toArray();
     
     if (!$this->retiro) {
         session()->flash('error', 'Retiro não encontrado.');
@@ -53,13 +55,10 @@ $getEquipes = computed(function () {
 
 // Computed para buscar servos da equipe selecionada
 $servosEquipe = computed(function () {
-    if (!$this->selectedEquipe) {
-        return collect();
-    }
 
     return \DB::table('pessoa_retiros')
-        ->where('equipe_id', $this->selectedEquipe)
         ->where('retiro_id', $this->retiroId)
+        ->where('equipe_id', $this->equipe_id)
         ->join('pessoas', 'pessoa_retiros.pessoa_id', '=', 'pessoas.id')
         ->leftJoin('telefones', function ($join) {
             $join->on('telefones.pessoa_id', '=', 'pessoas.id')
@@ -77,10 +76,16 @@ $getPessoas = computed(function () {
             $join->on('telefones.pessoa_id', '=', 'pessoas.id')
                  ->where('telefones.is_principal', true);
         })
-        ->where('pessoas.tipo_pessoa_id', 1)
+        ->where('pessoas.tipo_pessoa_id', 3)
         ->select('pessoas.*', 'telefones.numero as telefone_principal')
-        ->when($this->ja_trabalhou !== null, function ($query) {
-            return $query->where('pessoas.ja_trabalhou', $this->ja_trabalhou);
+        ->when($this->data_nascimento_minima && $this->data_nascimento_maxima, function ($query) {
+            return $query->whereBetween('pessoas.data_nascimento', [$this->data_nascimento_minima, $this->data_nascimento_maxima]);
+        })
+        ->when($this->data_nascimento_minima && !$this->data_nascimento_maxima, function ($query) {
+            return $query->where('pessoas.data_nascimento', '>=', $this->data_nascimento_minima);
+        })
+        ->when(!$this->data_nascimento_minima && $this->data_nascimento_maxima, function ($query) {
+            return $query->where('pessoas.data_nascimento', '<=', $this->data_nascimento_maxima);
         })
         ->when($this->genero, function ($query) {
             return $query->where('pessoas.genero', $this->genero);
@@ -121,12 +126,8 @@ $clearFilters = function () {
 
 // Ativar modo de seleção
 $activateSelectionMode = function () {
-    if ($this->selectedEquipe) {
-        $this->showSelectionMode = true;
-        $this->selectedServos = [];
-    } else {
-        session()->flash('error', 'Selecione a equipe de trabalho primeiro.');
-    }
+    $this->showSelectionMode = true;
+    $this->selectedServos = [];
 };
 
 // Toggle seleção de servo
@@ -148,15 +149,9 @@ $toggleSelectAllServos = function () {
 };
 
 // Adicionar servos selecionados à equipe
-$addServosToEquipe = function () {
+$addRetirantesToGrupo = function () {
     if (empty($this->selectedServos)) {
         session()->flash('error', 'Selecione pelo menos um servo.');
-        return;
-    }
-
-    $equipe = Equipe::find($this->selectedEquipe);
-    if (!$equipe) {
-        session()->flash('error', 'Equipe não encontrada.');
         return;
     }
 
@@ -164,18 +159,18 @@ $addServosToEquipe = function () {
     foreach ($this->selectedServos as $pessoaId) {
         // Verificar se já não está na equipe
         $exists = \DB::table('pessoa_retiros')
-            ->where('equipe_id', $this->selectedEquipe)
             ->where('retiro_id', $this->retiroId)
+            ->where('equipe_id', $this->equipe_id)
             ->where('pessoa_id', $pessoaId)
             ->exists();
         
         if (!$exists) {
             \DB::table('pessoa_retiros')->insert([
-                'equipe_id' => $this->selectedEquipe,
                 'retiro_id' => $this->retiroId,
                 'pessoa_id' => $pessoaId,
+                'equipe_id' => $this->equipe_id,
                 'status_id' => 1, // Não chamado
-                'tipo_id' => 1, // Servo
+                'tipo_id' => 3,
             ]);
             $adicionados++;
         }
@@ -196,14 +191,14 @@ $addServosToEquipe = function () {
 };
 
 // Remover servo da equipe
-$removeServoFromEquipe = function ($pessoaId) {
+$removeRetiranteRetiro = function ($pessoaId) {
     \DB::table('pessoa_retiros')
-        ->where('equipe_id', $this->selectedEquipe)
         ->where('retiro_id', $this->retiroId)
+        ->where('equipe_id', $this->equipe_id)
         ->where('pessoa_id', $pessoaId)
         ->delete();
     
-    session()->flash('message', 'Servo removido da equipe com sucesso!');
+    session()->flash('message', 'Retirante removido do retiro com sucesso!');
     
     // Disparar evento para atualização da tabela
     $this->dispatch('servos-equipe-updated');
@@ -215,29 +210,13 @@ $cancelSelection = function () {
     $this->selectedServos = [];
 };
 
-// Atualizar lista de servos da equipe quando a equipe selecionada mudar
-$updatedSelectedEquipe = function () {
-    if ($this->selectedEquipe) {
-        $this->nomeEquipe = Equipe::find($this->selectedEquipe)->nome ?? '';
 
-        $this->listSelectedEquipes = $this->servosEquipe->toArray();
-        $this->selectedServos = []; // Limpar a lista de servos selecionados
-    }
-};
 
 // Atualizar tabela automaticamente quando listSelectedEquipes for alterado
 $updatedListSelectedEquipes = function () {
     $this->dispatch('servos-equipe-updated'); // Disparar evento para atualizar a tabela
 };
 
-// Delete method
-$delete = function ($id) {
-    $pessoa = Pessoa::find($id);
-    if ($pessoa) {
-        $pessoa->delete();
-        session()->flash('message', 'Pessoa excluída com sucesso!');
-    }
-};
 
 ?>
 
@@ -245,8 +224,8 @@ $delete = function ($id) {
     <!-- Cabeçalho -->
     <div class="flex items-center justify-between mb-5">
         <div>
-            <h1 class="text-2xl font-bold">Servos - {{ $retiro->nome ?? 'Retiro' }}</h1>
-            <p class="">Gerencie os servos para o {{ $retiro->nome ?? '' }}.</p>
+            <h1 class="text-2xl font-bold">Retirantes - {{ $retiro->nome ?? 'Retiro' }}</h1>
+            <p class="">Gerencie os retirantes para o {{ $retiro->nome ?? '' }}.</p>
         </div>
         <div class="flex gap-3">
             <button 
@@ -258,42 +237,31 @@ $delete = function ($id) {
                 </svg>
                 Filtros
             </button>
-            <a href="{{ route('servos.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                Adicionar Servo
+            <a href="{{ route('retirantes.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                Adicionar Retirante
             </a>
         </div>
     </div>
 
     <!-- Seleção de Equipe -->
     <div class="bg-white border border-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 rounded-lg shadow-sm p-4 mb-6">
-        <h3 class="text-lg font-medium mb-4">Gerenciar Equipes de Trabalho</h3>
+        <h3 class="text-lg font-medium mb-4">Gerenciar Grupos de Retirantes</h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <!-- Seleção de Equipe -->
-            <div class="space-y-2">
-                <label for="selectedEquipe" class="block text-sm font-medium">Equipe de Trabalho</label>
-                <flux:select wire:model.live="selectedEquipe" id="selectedEquipe" class="w-full">
-                    <flux:select.option value="">Selecione uma equipe</flux:select.option>
-                    @foreach ($this->getEquipes as $equipe)
-                        <flux:select.option value="{{ $equipe->id }}">{{ $equipe->nome }}</flux:select.option>
-                    @endforeach
-                </flux:select>
-            </div>
 
             <!-- Botão para ativar seleção -->
             <div class="flex items-end">
-                @if($selectedEquipe)
                     @if(!$showSelectionMode)
                         <button 
                             wire:click="activateSelectionMode"
                             class="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
                         >
-                            Adicionar Servos
+                            Adicionar Retirantes
                         </button>
                     @else
                         <div class="flex gap-2 w-full">
                             <button 
-                                wire:click="addServosToEquipe"
+                                wire:click="addRetirantesToGrupo"
                                 class="flex-1 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
                             >
                                 Confirmar ({{ count($selectedServos) }})
@@ -305,7 +273,6 @@ $delete = function ($id) {
                                 Cancelar
                             </button>
                         </div>
-                    @endif
                 @endif
             </div>
         </div>
@@ -353,15 +320,21 @@ $delete = function ($id) {
                 >
             </div>
 
-            <!-- Filtro Já Trabalhou -->
             <div class="space-y-2">
-                <label for="ja_trabalhou" class="block text-sm font-medium">Já trabalhou?</label>
-                <flux:select wire:model.live.debounce.300ms="ja_trabalhou" id="ja_trabalhou" class="w-full">
-                    <flux:select.option value="">Todos</flux:select.option>
-                    <flux:select.option value="1">Sim</flux:select.option>
-                    <flux:select.option value="0">Não</flux:select.option>
-                </flux:select>
+                <label for="telefone" class="block text-sm font-medium whitespace-nowrap">Data nasc Minima</label>
+                <input wire:model.live.debounce.300ms="data_nascimento_minima" type="date" id="telefone"
+                    placeholder="(00) 00000-0000"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
             </div>
+            <div class="space-y-2">
+                <label for="data_nascimento_maxima" class="block text-sm font-medium whitespace-nowrap">Data Nac
+                    Maxim</label>
+                <input wire:model.live.debounce.300ms="data_nascimento_maxima" type="date"
+                    id="data_nascimento_maxima" placeholder="(00) 00000-0000"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+
+
 
             <!-- Filtro Gênero -->
             <div class="space-y-2">
@@ -421,7 +394,7 @@ $delete = function ($id) {
                         <input 
                             type="checkbox" 
                             class="rounded"
-                            wire:click="toggleSelectAllServos"
+                            wire:click="toggleSelectAllRetirantes"
                             {{ count($selectedServos) === $this->getPessoas->count() && $this->getPessoas->count() > 0 ? 'checked' : '' }}
                             {{ $this->getPessoas->count() === 0 ? 'disabled' : '' }}
                         >
@@ -470,12 +443,11 @@ $delete = function ($id) {
     </div>
 
     <!-- Tabela da Equipe Selecionada -->
-    @if($selectedEquipe)
     <div class="mt-8">
         <div class="flex items-center justify-between mb-5">
             <div>
                 <h2 class="text-xl font-bold">
-                    Servos na Equipe: {{ $nomeEquipe }}
+                    Retirantes do {{ $retiro->nome ?? 'Retiro' }} ({{ $this->servosEquipe->count() }})
                 </h2>
             </div>
         </div>
@@ -506,11 +478,11 @@ $delete = function ($id) {
                             <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->telefone_principal ?? 'Sem telefone' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <button 
-                                    wire:click="removeServoFromEquipe({{ $pessoa->id }})" 
+                                    wire:click="removeRetiranteRetiro({{ $pessoa->id }})" 
                                     class="text-red-600 hover:text-red-900"
                                     onclick="return confirm('Tem certeza que deseja remover este servo da equipe?')"
                                     wire:loading.attr="disabled"
-                                    wire:target="removeServoFromEquipe"
+                                    wire:target="removeRetiranteRetiro"
                                 >
                                     <flux:icon.trash/>    
                                 </button>
@@ -520,14 +492,13 @@ $delete = function ($id) {
 
                     @if($this->servosEquipe->count() === 0)
                         <tr>
-                            <td colspan="3" class="px-6 py-4 text-center">Nenhum servo nesta equipe</td>
+                            <td colspan="3" class="px-6 py-4 text-center">Nenhum retirante nesta equipe</td>
                         </tr>
                     @endif
                 </tbody>
             </table>
         </div>
     </div>
-    @endif
 </div>
 
 <script>

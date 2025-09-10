@@ -38,6 +38,8 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('retiros/{id}/edit', 'retiros.edit')->name('retiros.edit');
 
     Volt::route('servos-retiros/{retiroId}', 'servos-retiros.index')->name('servos-retiros.index');
+    Volt::route('retirantes-retiros/{retiroId}', 'retirantes-retiros.index')->name('retirantes-retiros.index');
+
 
 
 });
