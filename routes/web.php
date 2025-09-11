@@ -3,9 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+// Route::get('/', function () {
+//     return view('welcome');
+// })->name('home');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
@@ -39,6 +39,11 @@ Route::middleware(['auth'])->group(function () {
 
     Volt::route('servos-retiros/{retiroId}', 'servos-retiros.index')->name('servos-retiros.index');
     Volt::route('retirantes-retiros/{retiroId}', 'retirantes-retiros.index')->name('retirantes-retiros.index');
+
+    Volt::route('configuracoes/pessoas', 'configuracoes.pessoas.index')->name('pessoas.index');
+    Volt::route('configuracoes/pessoas/create', 'configuracoes.pessoas.create')->name('pessoas.create');
+    Volt::route('configuracoes/pessoas/{id}/edit', 'configuracoes.pessoas.edit')->name('pessoas.edit');
+
 
 
 

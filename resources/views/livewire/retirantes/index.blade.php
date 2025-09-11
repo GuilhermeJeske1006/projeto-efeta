@@ -70,7 +70,7 @@ $delete = function ($id) {
 <div>
     <div class="flex items-center justify-between mb-5">
         <div>
-            <h1 class="text-2xl font-bold">Retirante</h1>
+            <h1 class="text-2xl font-bold">Lista de espera</h1>
             <p class="">Gerencie os retirantes cadastrados no sistema.</p>
         </div>
         <a href="{{ route('retirantes.create') }}"
@@ -178,10 +178,10 @@ $delete = function ($id) {
                         <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->nome }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->telefone_principal ?? 'Sem telefone' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->genero }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->data_nascimento }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ \Carbon\Carbon::parse($pessoa->data_nascimento)->format('d/m/Y') }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->cpf }}</td>
                         <td class="px-6 py-4 whitespace-nowrap flex items-center">
-                            <a href="{{ route('retirantes.show', $pessoa) }}"
+                            <a href="{{ route('servos.show', $pessoa) }}"
                                 class="text-blue-600 hover:text-blue-900 mr-3">
                                 <flux:icon.eye />
                             </a>

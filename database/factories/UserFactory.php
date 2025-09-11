@@ -29,6 +29,9 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password'          => static::$password ??= Hash::make('password'),
             'remember_token'    => Str::random(10),
+            'telefone'          => fake()->phoneNumber(),
+            'cpf'               => fake()->numerify('###########'),
+            'role_id'           => 1, // Default role_id, adjust as necessary
         ];
     }
 

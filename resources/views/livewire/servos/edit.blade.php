@@ -67,8 +67,14 @@ mount(function ($id = null) {
 // Load person data
 $carregarDadosPessoa = function () {
     try {
-        $this->pessoa = DB::table('pessoas')->join('enderecos_pessoas', 'enderecos_pessoas.pessoa_id', '=', 'pessoas.id')->join('enderecos', 'enderecos.id', '=', 'enderecos_pessoas.endereco_id')->where('pessoas.id', $this->pessoaId)->select('pessoas.*', 'enderecos.*')->limit(1)->first();
-
+        $this->pessoa = DB::table('pessoas')
+                ->leftJoin('enderecos_pessoas', 'enderecos_pessoas.pessoa_id', '=', 'pessoas.id')
+                ->leftJoin('enderecos', 'enderecos.id', '=', 'enderecos_pessoas.endereco_id')
+                ->where('pessoas.id', $this->pessoaId)
+                ->select('pessoas.*', 'enderecos.*')
+                ->limit(1)
+                ->first();
+                
         $this->telefones = DB::table('telefones')->where('pessoa_id', $this->pessoaId)->get()->toArray();
 
         // Carregar dados básicos da pessoa

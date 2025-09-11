@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Pessoa;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,6 +14,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         Pessoa::factory()->count(50)->create();
+        User::factory()->count(50)->create();
+
 
         // User::factory()->create([
         //     'name'  => 'Test User',

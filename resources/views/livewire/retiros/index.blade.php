@@ -105,9 +105,12 @@ $delete = function ($id) {
                         <td class="px-6 py-4 whitespace-nowrap">{{ \Carbon\Carbon::parse($retiro->data_inicio)->format('d/m/Y') }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ \Carbon\Carbon::parse($retiro->data_fim)->format('d/m/Y') }}</td>
                         <td class="px-6 py-4 whitespace-nowrap flex items-center">
-                            <a href="{{ route('servos-retiros.index', $retiro->id) }}" class="text-blue-600 hover:text-blue-900 mr-3">
-                                <flux:icon.eye/>   
-                         </a>
+                            <a href="{{ route('servos-retiros.index', $retiro->id) }}"  class="text-blue-600 hover:text-blue-900 mr-3" title="Ver Servos">
+                                <flux:icon.users/>   
+                            </a>
+                            <a href="{{ route('retirantes-retiros.index', $retiro->id) }}" class="text-blue-600 hover:text-blue-900 mr-3" title="Ver Retirantes">
+                                <flux:icon.user-group/>   
+                            </a>
                             <a href="{{ route('retiros.edit', $retiro) }}" class="text-green-600 hover:text-green-900 mr-3">
                                 <flux:icon.pencil/>   
 

@@ -39,8 +39,14 @@ $getRetiros = function () {
 // Load person data
 $carregarDadosPessoa = function () {
     try {
-        $this->pessoa = DB::table('pessoas')->join('enderecos_pessoas', 'enderecos_pessoas.pessoa_id', '=', 'pessoas.id')->join('enderecos', 'enderecos.id', '=', 'enderecos_pessoas.endereco_id')->where('pessoas.id', $this->pessoaId)->select('pessoas.*', 'enderecos.*')->limit(1)->first();
-
+        $this->pessoa = DB::table('pessoas')
+                ->leftJoin('enderecos_pessoas', 'enderecos_pessoas.pessoa_id', '=', 'pessoas.id')
+                ->leftJoin('enderecos', 'enderecos.id', '=', 'enderecos_pessoas.endereco_id')
+                ->where('pessoas.id', $this->pessoaId)
+                ->select('pessoas.*', 'enderecos.*')
+                ->limit(1)
+                ->first();
+                
         $this->telefones = DB::table('telefones')->where('pessoa_id', $this->pessoaId)->get()->toArray();
 
         // Carregar dados básicos da pessoa
@@ -82,12 +88,9 @@ $carregarDadosPessoa = function () {
     }
 };
 
-
 $voltar = function () {
     return redirect()->route('servos.index');
 };
-
-
 
 // Computed para formatar data
 $dataFormatada = computed(function () {
@@ -107,57 +110,27 @@ $idade = computed(function () {
 
 ?>
 
-<div class="min-h-screen bg-gradient-to-br ">
+<div class="min-h-screen">
     <div class="max-w-7xl mx-auto p-6">
-        <!-- Header Card -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 mb-8 overflow-hidden">
-            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-8 py-6">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div class="text-white">
-                        <h1 class="text-3xl font-bold mb-2">
-                            {{ $dados['nome'] ?? 'Nome não informado' }}
-                        </h1>
-                        <div class="flex items-center gap-4 text-blue-100">
-                            <span class="flex items-center gap-1">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
-                                </svg>
-                                Detalhes do Servidor
-                            </span>
-                            @if($this->idade)
-                                <span class="flex items-center gap-1">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
-                                    </svg>
-                                    {{ $this->idade }} anos
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-                    
-                    <!-- Action Buttons -->
-                    <div class="flex flex-wrap gap-3">
-                        
-                        <flux:button type="button" variant="outline" wire:click="voltar" class="flex bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm">
-                            
-                            Voltar a lista
-                        </flux:button>
-                        
 
-                    </div>
-                </div>
+
+        <div class="flex items-center justify-between mb-5">
+            <div>
+                <h1 class="text-2xl font-bold">Detalhes da pessoa</h1>
             </div>
+            <flux:button type="button" variant="outline" wire:click="voltar" class="flex bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm">
+            Voltar a lista
+        </flux:button>
         </div>
 
         <!-- Main Content Grid -->
-        <div class="grid  gap-8">
+        <div class="grid gap-8">
             <!-- Left Column - Personal Data -->
             <div class="space-y-8">
                 
                 <!-- Personal Information Card -->
-                <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
-                    <div class="bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div class="bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 rounded-lg shadow-sm px-6 py-4">
                         <h2 class="text-xl font-bold text-white flex items-center">
                             <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-3">
                                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -171,46 +144,46 @@ $idade = computed(function () {
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Nome Completo</label>
-                                <p class="text-lg font-medium text-slate-900 dark:text-slate-100">{{ $dados['nome'] ?? '-' }}</p>
+                                <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nome Completo</label>
+                                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $dados['nome'] ?? '-' }}</p>
                             </div>
                             
                             <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">CPF</label>
-                                <p class="text-lg font-medium text-slate-900 dark:text-slate-100 font-mono">{{ $dados['cpf'] ?? '-' }}</p>
+                                <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">CPF</label>
+                                <p class="text-lg font-medium text-gray-900 dark:text-gray-100 font-mono">{{ $dados['cpf'] ?? '-' }}</p>
                             </div>
                             
                             <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Data de Nascimento</label>
-                                <p class="text-lg font-medium text-slate-900 dark:text-slate-100">
+                                <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Data de Nascimento</label>
+                                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">
                                     {{ $this->dataFormatada }} 
                                     @if($this->idade)
-                                        <span class="text-sm text-slate-500 dark:text-slate-400 ml-2 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-full">{{ $this->idade }} anos</span>
+                                        <span class="text-sm text-gray-500 dark:text-gray-400 ml-2 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">{{ $this->idade }} anos</span>
                                     @endif
                                 </p>
                             </div>
                             
                             <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">E-mail</label>
-                                <p class="text-lg font-medium text-slate-900 dark:text-slate-100 break-all">{{ $dados['email'] ?? '-' }}</p>
+                                <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">E-mail</label>
+                                <p class="text-lg font-medium text-gray-900 dark:text-gray-100 break-all">{{ $dados['email'] ?? '-' }}</p>
                             </div>
                             
                             <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Gênero</label>
-                                <p class="text-lg font-medium text-slate-900 dark:text-slate-100">{{ $dados['genero'] ?? '-' }}</p>
+                                <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Gênero</label>
+                                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $dados['genero'] ?? '-' }}</p>
                             </div>
                             
                             <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Estado Civil</label>
-                                <p class="text-lg font-medium text-slate-900 dark:text-slate-100">{{ $dados['estado_civil'] ?? '-' }}</p>
+                                <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado Civil</label>
+                                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $dados['estado_civil'] ?? '-' }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Address Card -->
-                <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
-                    <div class="bg-gradient-to-r from-amber-500 to-orange-600 px-6 py-4">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div class="bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 rounded-lg shadow-sm px-6 py-4">
                         <h2 class="text-xl font-bold text-white flex items-center">
                             <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-3">
                                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -225,45 +198,45 @@ $idade = computed(function () {
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="md:col-span-2 space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Logradouro</label>
-                                <p class="text-lg font-medium text-slate-900 dark:text-slate-100">
+                                <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Logradouro</label>
+                                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">
                                     {{ $dados['logradouro'] ?? '-' }}, {{ $dados['numero'] ?? '-' }}
                                     @if($dados['complemento'])
-                                        <span class="text-slate-600 dark:text-slate-400"> - {{ $dados['complemento'] }}</span>
+                                        <span class="text-gray-600 dark:text-gray-400"> - {{ $dados['complemento'] }}</span>
                                     @endif
                                 </p>
                             </div>
                             
                             <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Bairro</label>
-                                <p class="text-lg font-medium text-slate-900 dark:text-slate-100">{{ $dados['bairro'] ?? '-' }}</p>
+                                <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Bairro</label>
+                                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $dados['bairro'] ?? '-' }}</p>
                             </div>
                             
                             <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">CEP</label>
-                                <p class="text-lg font-medium text-slate-900 dark:text-slate-100 font-mono">{{ $dados['cep'] ?? '-' }}</p>
+                                <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">CEP</label>
+                                <p class="text-lg font-medium text-gray-900 dark:text-gray-100 font-mono">{{ $dados['cep'] ?? '-' }}</p>
                             </div>
                             
                             <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Cidade</label>
-                                <p class="text-lg font-medium text-slate-900 dark:text-slate-100">{{ $dados['cidade'] ?? '-' }}</p>
+                                <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cidade</label>
+                                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $dados['cidade'] ?? '-' }}</p>
                             </div>
                             
                             <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Estado</label>
-                                <p class="text-lg font-medium text-slate-900 dark:text-slate-100">{{ $dados['estado'] ?? '-' }}</p>
+                                <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado</label>
+                                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $dados['estado'] ?? '-' }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Phone Numbers Card -->
-                <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
-                    <div class="bg-gradient-to-r from-purple-500 to-pink-600 px-6 py-4">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div class="bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 rounded-lg shadow-sm px-6 py-4">
                         <h2 class="text-xl font-bold text-white flex items-center">
                             <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-3">
                                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.986.836l1.498 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-1C7.82 18 2 12.18 2 5V3z"/>
                                 </svg>
                             </div>
                             Telefones
@@ -274,17 +247,17 @@ $idade = computed(function () {
                         @if(isset($dados['telefones']) && count($dados['telefones']) > 0)
                             <div class="space-y-4">
                                 @foreach($dados['telefones'] as $telefone)
-                                    <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-600 hover:shadow-md transition-shadow">
+                                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:shadow-md transition-shadow">
                                         <div class="flex-1">
                                             <div class="flex items-center gap-3">
-                                                <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
+                                                <div class="w-10 h-10 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900  rounded-lg flex items-center justify-center">
                                                     <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                                                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l1.498 4.493a1 1 0 01-.502 1.21l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.949V17a1 1 0 01-1 1h-1C7.82 18 2 12.18 2 5V3z"/>
                                                     </svg>
                                                 </div>
                                                 <div>
                                                     <div class="flex items-center gap-2">
-                                                        <span class="text-lg font-semibold text-slate-900 dark:text-slate-100 font-mono">
+                                                        <span class="text-lg font-semibold text-gray-900 dark:text-gray-100 font-mono">
                                                             {{ $telefone['numero'] ?? '-' }}
                                                         </span>
                                                         @if($telefone['is_principal'] ?? false)
@@ -293,7 +266,7 @@ $idade = computed(function () {
                                                             </span>
                                                         @endif
                                                     </div>
-                                                    <div class="text-sm text-slate-600 dark:text-slate-400">
+                                                    <div class="text-sm text-gray-600 dark:text-gray-400">
                                                         <span class="font-medium">{{ $telefone['tipo'] ?? '-' }}</span>
                                                         @if($telefone['nome_pessoa'])
                                                             <span> • {{ $telefone['nome_pessoa'] }}</span>
@@ -307,87 +280,84 @@ $idade = computed(function () {
                             </div>
                         @else
                             <div class="text-center py-12">
-                                <div class="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                                     </svg>
                                 </div>
-                                <p class="text-slate-500 dark:text-slate-400">Nenhum telefone cadastrado</p>
+                                <p class="text-gray-500 dark:text-gray-400">Nenhum telefone cadastrado</p>
                             </div>
                         @endif
                     </div>
                 </div>
-                <div class="space-y-8">
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
-                        <div class="bg-gradient-to-r from-indigo-500 to-blue-600 px-6 py-4">
-                            <h2 class="text-xl font-bold text-white flex items-center">
-                                <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-3">
-                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+
+                <!-- Retiros History Card -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div class="bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 rounded-lg shadow-sm px-6 py-4">
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                            </div>
+                            Histórico de retiros
+                        </h2>
+                    </div>
+                    
+                    <div class="overflow-hidden">
+                        @php $retiros = $this->getRetiros(); @endphp
+                        
+                        @if(count($retiros) > 0)
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead class="bg-gray-50 dark:bg-gray-700">
+                                        <tr>
+                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Retiro</th>
+                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Função</th>
+                                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                        @foreach($retiros as $retiro)
+                                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                                <td class="px-6 py-4">
+                                                    <div class="font-semibold text-gray-900 dark:text-gray-100">{{ $retiro->nome }}</div>
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100">
+                                                        {{ $retiro->equipe_nome }}
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
+                                                        {{ $retiro->status_nome }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="text-center py-12 px-6">
+                                <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                     </svg>
                                 </div>
-                                Retiros Trabalhados
-                            </h2>
-                        </div>
+                                <p class="text-gray-500 dark:text-gray-400">Nenhum registro encontrado</p>
+                            </div>
+                        @endif
                         
-                        <div class="overflow-hidden">
-                            @php $retiros = $this->getRetiros(); @endphp
-                            
-                            @if(count($retiros) > 0)
-                                <div class="overflow-x-auto">
-                                    <table class="w-full">
-                                        <thead class="bg-slate-50 dark:bg-slate-700">
-                                            <tr>
-                                                <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Retiro</th>
-                                                <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Função</th>
-                                                <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
-                                            @foreach($retiros as $retiro)
-                                                <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                                                    <td class="px-6 py-4">
-                                                        <div class="font-semibold text-slate-900 dark:text-slate-100">{{ $retiro->nome }}</div>
-                                                    </td>
-                                                    <td class="px-6 py-4">
-                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100">
-                                                            {{ $retiro->equipe_nome }}
-                                                        </span>
-                                                    </td>
-                                                    <td class="px-6 py-4">
-                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
-                                                            {{ $retiro->status_nome }}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            @else
-                                <div class="text-center py-12 px-6">
-                                    <div class="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                        </svg>
-                                    </div>
-                                    <p class="text-slate-500 dark:text-slate-400">Nenhum retiro encontrado</p>
-                                </div>
-                            @endif
-                            
-                            <!-- Pagination -->
-                            @if(count($retiros) > 0)
-                                <div class="px-6 py-4 bg-slate-50 dark:bg-slate-700 border-t border-slate-200 dark:border-slate-600">
-                                    {{ $retiros->links() }}
-                                </div>
-                            @endif
-                        </div>
+                        <!-- Pagination -->
+                        @if(count($retiros) > 0)
+                            <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
+                                {{ $retiros->links() }}
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
-
-            <!-- Right Column - Retiros -->
-            
         </div>
     </div>
 </div>

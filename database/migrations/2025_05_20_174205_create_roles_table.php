@@ -22,8 +22,9 @@ return new class () extends Migration {
 
         // Populating the roles table with default roles
         DB::table('roles')->insert([
-            ['nome' => 'admin'],
-            ['nome' => 'user'],
+            ['nome' => 'Admin'],
+            ['nome' => 'Usuario'],
+            ['nome' => 'Convidado'],
         ]);
     }
 

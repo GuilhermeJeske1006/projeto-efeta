@@ -34,8 +34,8 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
 <div class="flex flex-col gap-6">
     <x-auth-header
-        :title="__('Confirm password')"
-        :description="__('This is a secure area of the application. Please confirm your password before continuing.')"
+        :title="__('Confirmar senha')"
+        :description="__('Esta é uma área segura do aplicativo. Por favor, confirme sua senha antes de continuar.')"
     />
 
     <!-- Session Status -->
@@ -53,6 +53,6 @@ new #[Layout('components.layouts.auth')] class extends Component {
             viewable
         />
 
-        <flux:button variant="primary" type="submit" class="w-full">{{ __('Confirm') }}</flux:button>
+        <flux:button variant="primary" type="submit" class="w-full">{{ __('Confirmar') }}</flux:button>
     </form>
 </div>
