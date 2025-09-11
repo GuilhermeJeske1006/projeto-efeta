@@ -65,7 +65,8 @@ $servosEquipe = computed(function () {
             $join->on('telefones.pessoa_id', '=', 'pessoas.id')
                  ->where('telefones.is_principal', true);
         })
-        ->select('pessoas.*', 'telefones.numero as telefone_principal')
+        ->select('pessoas.*', 'telefones.numero as telefone_principal', 'pessoa_retiros.is_coordenador')
+        ->orderByDesc('pessoa_retiros.is_coordenador')
         ->orderBy('pessoas.nome')
         ->get();
 });
@@ -207,6 +208,36 @@ $removeServoFromEquipe = function ($pessoaId) {
     
     // Disparar evento para atualização da tabela
     $this->dispatch('servos-equipe-updated');
+};
+
+// Adicionar coordenador à equipe
+$setCoordenador = function ($pessoaId) {
+    if (!$this->selectedEquipe || !$this->retiroId) {
+        session()->flash('error', 'Selecione uma equipe e um retiro.');
+        return;
+    }
+
+
+    try {
+    // Remover o coordenador atual da equipe e retiro
+        \DB::table('pessoa_retiros')
+            ->where('equipe_id', $this->selectedEquipe)
+            ->where('retiro_id', $this->retiroId)
+            ->update(['is_coordenador' => false]);
+
+        // Definir o novo coordenador
+        \DB::table('pessoa_retiros')
+            ->where('equipe_id', $this->selectedEquipe)
+            ->where('retiro_id', $this->retiroId)
+            ->where('pessoa_id', $pessoaId)
+            ->update(['is_coordenador' => true]);
+
+        session()->flash('message', 'Coordenador definido com sucesso!');
+        $this->dispatch('servos-equipe-updated');
+    } catch (\Exception $th) {
+        session()->flash('error', 'Erro ao definir coordenador: ' . $th->getMessage());
+    }
+
 };
 
 // Cancelar modo de seleção
@@ -495,6 +526,8 @@ $delete = function ($id) {
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefone Principal</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
                     </tr>
                 </thead>
@@ -505,6 +538,21 @@ $delete = function ($id) {
                             <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->nome }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->telefone_principal ?? 'Sem telefone' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
+                                @if($pessoa->is_coordenador)
+                                    <span class="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                                        Coordenador
+                                    </span>
+                                @endif
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <button 
+                                    wire:click="setCoordenador({{ $pessoa->id }})" 
+                                    class="text-yellow-600 hover:text-yellow-900"
+                                    wire:loading.attr="disabled"
+                                    wire:target="setCoordenador"
+                                >
+                                    <flux:icon.star />
+
+                                </button>
                                 <button 
                                     wire:click="removeServoFromEquipe({{ $pessoa->id }})" 
                                     class="text-red-600 hover:text-red-900"

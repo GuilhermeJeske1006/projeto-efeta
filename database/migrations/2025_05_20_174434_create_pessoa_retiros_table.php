@@ -16,6 +16,7 @@ return new class () extends Migration {
             $table->foreignId('retiro_id')->constrained('retiros')->onDelete('cascade');
             $table->foreignId('status_id')->constrained('status_chamados')->onDelete('cascade');
             $table->foreignId('tipo_id')->constrained('tipo_pessoas')->onDelete('cascade');
+            $table->boolean('is_coordenador')->default(false);
 
             $table->timestamps();
         });
