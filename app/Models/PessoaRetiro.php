@@ -11,11 +11,11 @@ class PessoaRetiro extends Model
         'retiro_id',
         'equipe_id',
         'tipo_id',
-        'status_chamado_id',
+        'status_id',
         'is_coordenador',
     ];
 
-    protected $table = 'pessoas_retiros';
+    protected $table = 'pessoa_retiros';
 
     public function pessoa()
     {

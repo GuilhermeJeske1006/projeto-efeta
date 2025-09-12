@@ -179,16 +179,15 @@ $delete = function ($id) {
                         <td class="px-6 py-4 whitespace-nowrap flex items-center">
                             <a href="{{ route('servos.show', $pessoa) }}" class="text-blue-600 hover:text-blue-900 mr-3">
                                 <flux:icon.eye/>   
-                         </a>
+                            </a>
                             <a href="{{ route('servos.edit', $pessoa) }}" class="text-green-600 hover:text-green-900 mr-3">
                                 <flux:icon.pencil/>   
-
                             </a>
-                            <button wire:click="delete({{ $pessoa->id }})" class="text-red-600 hover:text-red-900">
-
-                                <flux:icon.trash/>   
-
-                            </button>
+                            @if (auth()->user()->role_id === 1)
+                                <button wire:click="delete({{ $pessoa->id }})" class="text-red-600 hover:text-red-900">
+                                    <flux:icon.trash/>   
+                                </button>
+                            @endif      
                         </td>
                     </tr>
                 @endforeach

@@ -27,6 +27,12 @@ state([
     'dadosFormulario' => [],
 ]);
 
+mount(function () {
+    if(auth()->user()->role_id !== 1) {
+        abort(403, 'Acesso não autorizado');
+    }
+});
+
 on([
     'dados-formulario' => function ($dados) {
         $this->dadosFormulario = $dados;

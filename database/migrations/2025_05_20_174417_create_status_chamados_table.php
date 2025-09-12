@@ -20,7 +20,7 @@ return new class () extends Migration {
         DB::table('status_chamados')->insert([
             ['nome' => 'Não chamado'],
             ['nome' => 'Para chamar'],
-            ['nome' => 'chamado'],
+            ['nome' => 'Chamado'],
             ['nome' => 'Atendido'],
             ['nome' => 'Em espera por resposta'],
             ['nome' => 'Em espera por atendimento'],

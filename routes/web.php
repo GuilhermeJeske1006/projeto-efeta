@@ -50,6 +50,8 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('configuracoes/permissoes/{id}/edit', 'configuracoes.permissoes.edit')->name('permissoes.edit');
 
 
+    Volt::route('chamamento', 'chamamento.servos')->name('chamamento.index');
+
 
 
 });

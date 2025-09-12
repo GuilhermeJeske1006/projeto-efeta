@@ -140,7 +140,7 @@ $toggleServoSelection = function ($pessoaId) {
 };
 
 // Método para selecionar ou desmarcar todos os usuários
-$toggleSelectAllServos = function () {
+$toggleSelectAllRetirantes = function () {
     if (count($this->selectedServos) === $this->getPessoas->count()) {
         $this->selectedServos = []; // Desmarcar todos
     } else {
@@ -169,6 +169,7 @@ $addRetirantesToGrupo = function () {
                 'retiro_id' => $this->retiroId,
                 'pessoa_id' => $pessoaId,
                 'equipe_id' => $this->equipe_id,
+                'is_coordenador' => false,
                 'status_id' => 1, // Não chamado
                 'tipo_id' => 3,
             ]);

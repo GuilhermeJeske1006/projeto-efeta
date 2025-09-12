@@ -27,7 +27,7 @@ $getPessoas = function () {
         ->leftJoin('telefones', function ($join) {
             $join->on('telefones.pessoa_id', '=', 'pessoas.id')->where('telefones.is_principal', true);
         })
-        ->where('pessoas.tipo_pessoa_id', 2)
+        ->where('pessoas.tipo_pessoa_id', 1)
         ->select('pessoas.*', 'telefones.numero as telefone_principal')
         ->when($this->data_nascimento_minima && $this->data_nascimento_maxima, function ($query) {
             return $query->whereBetween('pessoas.data_nascimento', [$this->data_nascimento_minima, $this->data_nascimento_maxima]);
@@ -75,7 +75,7 @@ $delete = function ($id) {
         </div>
         <a href="{{ route('retirantes.create') }}"
             class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-            Adicionar retirante
+            Adicionar
         </a>
     </div>
     <div
@@ -188,13 +188,13 @@ $delete = function ($id) {
                             <a href="{{ route('retirantes.edit', $pessoa) }}"
                                 class="text-green-600 hover:text-green-900 mr-3">
                                 <flux:icon.pencil />
-
                             </a>
+                            @if (auth()->user()->role_id === 1)
                             <button wire:click="delete({{ $pessoa->id }})" class="text-red-600 hover:text-red-900">
-
                                 <flux:icon.trash />
-
                             </button>
+                            @endif
+                           
                         </td>
                     </tr>
                 @endforeach

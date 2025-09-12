@@ -34,6 +34,11 @@ state([
 
 // Mount - buscar retiro pela URL
 mount(function ($retiroId) {
+    
+    if(auth()->user()->role_id !== 1) {
+        abort(403, 'Acesso não autorizado');
+    }
+    
     $this->retiroId = $retiroId;
     $this->retiro = Retiro::find($retiroId);
     
@@ -175,6 +180,7 @@ $addServosToEquipe = function () {
                 'equipe_id' => $this->selectedEquipe,
                 'retiro_id' => $this->retiroId,
                 'pessoa_id' => $pessoaId,
+                'is_coordenador' => false,
                 'status_id' => 1, // Não chamado
                 'tipo_id' => 1, // Servo
             ]);

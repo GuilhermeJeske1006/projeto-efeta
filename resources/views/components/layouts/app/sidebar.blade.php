@@ -15,6 +15,7 @@
                 <flux:navlist.group :heading="__('Dashboard')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                 </flux:navlist.group>
+                @if (auth()->user()->role_id !== 3)
                 <flux:navlist.group :heading="__('Pessoas')" class="grid">
                     <flux:navlist.item icon="users" :href="route('servos.index')" :current="request()->routeIs('servos.index')" wire:navigate>{{ __('Servos') }}</flux:navlist.item>
                     <flux:navlist.item icon="clock" :href="route('retirantes.index')" :current="request()->routeIs('retirantes.index')" wire:navigate>{{ __('Lista de espera') }}</flux:navlist.item>
@@ -22,11 +23,20 @@
                 <flux:navlist.group :heading="__('Retiro')" class="grid">
                     <flux:navlist.item icon="calendar-days" :href="route('retiros.index')" :current="request()->routeIs('retiros.index')" wire:navigate>{{ __('Dados retiro') }}</flux:navlist.item>
                 </flux:navlist.group>
-                <flux:navlist.group :heading="__('Configurações')" class="grid">
-                    <flux:navlist.item icon="cog" :href="route('pessoas.index')" :current="request()->routeIs('pessoas.index')" wire:navigate>{{ __('Usuarios do sistema') }}</flux:navlist.item>
-                    <flux:navlist.item icon="cog" :href="route('permissoes.index')" :current="request()->routeIs('permissoes.index')" wire:navigate>{{ __('Permissões dos usuários') }}</flux:navlist.item>
+                
 
+                <flux:navlist.group :heading="__('Chamamento')" class="grid">
+                    <flux:navlist.item icon="user" :href="route('chamamento.index')" :current="request()->routeIs('chamamento.index')" wire:navigate>{{ __('Chamamento') }}</flux:navlist.item>
                 </flux:navlist.group>
+                @endif
+                @if (auth()->user()->role_id === 1)
+                    <flux:navlist.group :heading="__('Configurações')" class="grid">
+                        <flux:navlist.item icon="cog" :href="route('pessoas.index')" :current="request()->routeIs('pessoas.index')" wire:navigate>{{ __('Usuarios do sistema') }}</flux:navlist.item>
+                        <flux:navlist.item icon="cog" :href="route('permissoes.index')" :current="request()->routeIs('permissoes.index')" wire:navigate>{{ __('Permissões dos usuários') }}</flux:navlist.item>
+
+                    </flux:navlist.group>
+                @endif
+
             </flux:navlist>
 
             <flux:spacer />

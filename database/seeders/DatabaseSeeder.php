@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         Pessoa::factory()->count(50)->create();
-        User::factory()->count(50)->create();
+        // User::factory()->count(50)->create();
 
 
         // User::factory()->create([

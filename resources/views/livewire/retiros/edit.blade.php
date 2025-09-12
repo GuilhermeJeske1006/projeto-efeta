@@ -59,9 +59,15 @@ mount(function ($id = null) {
         abort(404, 'ID do retiro  não informado');
     }
 
+    if(auth()->user()->role_id !== 1) {
+        abort(403, 'Acesso não autorizado');
+    }
+
     $this->retiroId = $id;
     $this->carregarDadosRetiro();
 });
+
+
 
 // Load person data
 $carregarDadosRetiro = function () {

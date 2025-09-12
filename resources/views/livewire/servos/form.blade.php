@@ -507,8 +507,6 @@ $enviarDados = function () {
     <div class="col-span-2">
         <flux:input wire:model="logradouro" :label="__('Logradouro')" type="text" required />
     </div>
-
-    <!-- Número -->
    
     <!-- Complemento -->
     <div>

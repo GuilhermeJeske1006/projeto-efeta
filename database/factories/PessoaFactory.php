@@ -21,12 +21,13 @@ class PessoaFactory extends Factory
             'cpf' => $this->faker->unique()->numerify('###.###.###-##'),
             'data_nascimento' => $this->faker->date,
             'email' => $this->faker->unique()->safeEmail,
-            'tipo_pessoa_id' => 1,
+            'tipo_pessoa_id' => 3,
             'is_problema_saude' => $this->faker->boolean,
             'descricao' => $this->faker->optional()->sentence,
             'ja_trabalhou' => $this->faker->boolean,
             'genero' => $this->faker->randomElement(['masculino', 'feminino', 'outro']),
             'estado_civil' => $this->faker->randomElement(['solteiro', 'casado', 'divorciado', 'viúvo']),
+            
         ];
     }
 }
