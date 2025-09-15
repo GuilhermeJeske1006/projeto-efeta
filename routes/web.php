@@ -52,8 +52,7 @@ Route::middleware(['auth'])->group(function () {
 
     Volt::route('chamamento', 'chamamento.servos')->name('chamamento.index');
 
-
-
 });
+
 
 require __DIR__ . '/auth.php';

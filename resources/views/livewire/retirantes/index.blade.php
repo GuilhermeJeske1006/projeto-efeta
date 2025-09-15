@@ -27,7 +27,7 @@ $getPessoas = function () {
         ->leftJoin('telefones', function ($join) {
             $join->on('telefones.pessoa_id', '=', 'pessoas.id')->where('telefones.is_principal', true);
         })
-        ->where('pessoas.tipo_pessoa_id', 1)
+        ->where('pessoas.tipo_pessoa_id', 3)
         ->select('pessoas.*', 'telefones.numero as telefone_principal')
         ->when($this->data_nascimento_minima && $this->data_nascimento_maxima, function ($query) {
             return $query->whereBetween('pessoas.data_nascimento', [$this->data_nascimento_minima, $this->data_nascimento_maxima]);
@@ -49,7 +49,7 @@ $getPessoas = function () {
         ->when($this->nome, function ($query) {
             return $query->where('pessoas.nome', 'like', '%' . $this->nome . '%');
         })
-        ->orderBy('pessoas.data_nascimento', 'desc')
+        ->orderBy('pessoas.data_nascimento', 'asc')
         ->paginate($this->perPage);
 
 

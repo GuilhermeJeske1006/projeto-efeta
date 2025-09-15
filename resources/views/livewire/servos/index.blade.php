@@ -69,7 +69,7 @@ $delete = function ($id) {
             <p class="">Gerencie os servos cadastrados no sistema.</p>
         </div>
         <a href="{{ route('servos.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-            Adicionar Servo
+            Adicionar
         </a>
     </div>
     <div class="w-full border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 rounded-lg shadow-sm p-4 mb-6">

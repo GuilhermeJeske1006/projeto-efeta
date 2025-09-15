@@ -384,35 +384,35 @@ $enviarDados = function () {
 ?>
 <div>
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 gap-6 md:grid-cols-3">
     <div class="col-span-3">
         <h3 class="text-md font-medium mb-2 border-b pb-2">Dados Pessoais</h3>
     </div>
 
     <!-- Nome -->
-    <div>
+    <div class="col-span-1">
         <flux:input wire:model="nome" :label="__('Nome Completo')" type="text" required />
     </div>
 
     <!-- CPF -->
-    <div>
+    <div class="col-span-1">
         <flux:input wire:model="cpf" :label="__('CPF')" type="text" placeholder="000.000.000-00"
             required wire:change="formatarEValidarCpf" />
     </div>
 
     <!-- Email -->
-    <div>
+    <div class="col-span-1">
         <flux:input wire:model="email" :label="__('E-mail')" type="email" required />
     </div>
 
     <!-- Data de Nascimento -->
-    <div>
+    <div class="col-span-1">
         <flux:input wire:model="data_nascimento" :label="__('Data de Nascimento')" type="date"
             required />
     </div>
 
     <!-- Gênero -->
-    <div>
+    <div class="col-span-1">
         <flux:select wire:model="genero" :label="__('Gênero')">
             <flux:select.option value="" disabled>
                 {{ __('Selecione o gênero') }}
@@ -423,11 +423,10 @@ $enviarDados = function () {
                 </flux:select.option>
             @endforeach
         </flux:select>
-
     </div>
 
     <!-- Estado Civil -->
-    <div>
+    <div class="col-span-1">
         <flux:select wire:model="estado_civil" :label="__('Estado Civil')">
             <flux:select.option value="" disabled>
                 {{ __('Selecione o estado civil') }}
@@ -436,10 +435,7 @@ $enviarDados = function () {
                 <flux:select.option value="{{ $item }}">{{ $item }}</flux:select.option>
             @endforeach
         </flux:select>
-
     </div>
-
-    
 
     <!-- Problemas de Saúde -->
     <div class="flex items-end">
@@ -494,7 +490,10 @@ $enviarDados = function () {
     </div>
 
     <!-- Número -->
-   
+    <div>
+        <flux:input wire:model="numero" :label="__('Número')" type="text" required />
+    </div>
+
     <!-- Complemento -->
     <div>
         <flux:input wire:model="complemento" :label="__('Complemento')" type="text" />
@@ -512,10 +511,6 @@ $enviarDados = function () {
         <flux:input wire:model="cidade" :label="__('Cidade')" type="text" required />
 
     </div>
-    <div>
-        <flux:input wire:model="numero" :label="__('Número')" type="text" required />
-
-    </div>
 
     <!-- Seção de Telefones -->
     <div class="col-span-3 mt-4">
@@ -525,14 +520,16 @@ $enviarDados = function () {
     <!-- Lista de Telefones -->
     <div class="col-span-3">
         @foreach ($telefones as $index => $telefone)
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 border-b pb-4">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-3 mb-4 border-b pb-4">
                 <!-- Número -->
-                <flux:input wire:model="telefones.{{ $index }}.numero"
-                    wire:change="formatarEValidarTelefone({{ $index }})" :label="__('Número')"
-                    type="text" placeholder="(00) 00000-0000" required />
+                <div class="col-span-1">
+                    <flux:input wire:model="telefones.{{ $index }}.numero"
+                        wire:change="formatarEValidarTelefone({{ $index }})" :label="__('Número')"
+                        type="text" placeholder="(00) 00000-0000" required />
+                </div>
 
                 <!-- Tipo -->
-                <div>
+                <div class="col-span-1">
                     <flux:select wire:model="telefones.{{ $index }}.tipo"
                         :label="__('Tipo')" required>
                         @foreach ($tiposTelefone as $item)
@@ -540,12 +537,10 @@ $enviarDados = function () {
                             </flux:select.option>
                         @endforeach
                     </flux:select>
-
                 </div>
-                
 
                 <!-- Nome da Pessoa -->
-                <div class="flex items-end space-x-2">
+                <div class="col-span-1 flex items-end space-x-2">
                     <div class="flex-grow">
                         <flux:input wire:model="telefones.{{ $index }}.nome_pessoa"
                             :label="__('Nome de Contato (opcional)')" type="text" />

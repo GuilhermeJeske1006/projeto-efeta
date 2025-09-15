@@ -21,6 +21,10 @@ class Pessoa extends Model
         'ja_trabalhou',
         'genero',
         'estado_civil',
+        'sacramento',
+        'motivo',
+        'comunidade',
+        'religiao',
     ];
 
     protected $casts = [

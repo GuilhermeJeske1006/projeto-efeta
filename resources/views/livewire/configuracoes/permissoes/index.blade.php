@@ -82,7 +82,7 @@ $removerPermissao = function ($id) {
         </div>
         <a href="{{ route('permissoes.create') }}"
             class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-            Adicionar permissão 
+            Adicionar 
         </a>
     </div>
     <div
