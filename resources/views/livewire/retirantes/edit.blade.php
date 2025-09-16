@@ -26,6 +26,10 @@ state([
         'ja_trabalhou' => false,
         'genero' => '',
         'estado_civil' => '',
+        'motivo' => '',
+        'religiao' => 'Católica',
+        'sacramentos' => '',
+        'comunidade' => '',
 
         // Endereço data
         'logradouro' => '',
@@ -84,6 +88,10 @@ $carregarDadosPessoa = function () {
         $this->formData['ja_trabalhou'] = $this->pessoa->ja_trabalhou;
         $this->formData['genero'] = $this->pessoa->genero ?? '';
         $this->formData['estado_civil'] = $this->pessoa->estado_civil ?? '';
+        $this->formData['motivo'] = $this->pessoa->motivo ?? '';
+        $this->formData['religiao'] = $this->pessoa->religiao ?? 'Católica';
+        $this->formData['sacramentos'] = $this->pessoa->sacramentos ?? '';
+        $this->formData['comunidade'] = $this->pessoa->comunidade ?? '';
 
         // Carregar dados do endereço (primeiro endereço se existir)
         $this->formData['logradouro'] = $this->pessoa->logradouro ?? '';
@@ -169,6 +177,10 @@ $atualizar = function () {
             'ja_trabalhou' => $dados['ja_trabalhou'] ?? false,
             'genero' => $dados['genero'] ?: null,
             'estado_civil' => $dados['estado_civil'] ?: null,
+            'motivo' => $dados['motivo'] ?: null,
+            'religiao' => $dados['religiao'] ?: null,
+            'sacramentos' => $dados['sacramentos'] ?: null,
+            'comunidade' => $dados['comunidade'] ?: null,
         ]);
 
         // Update or create address

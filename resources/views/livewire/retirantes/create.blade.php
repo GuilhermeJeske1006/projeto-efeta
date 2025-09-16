@@ -23,6 +23,10 @@ state([
         'ja_trabalhou' => false,
         'genero' => '',
         'estado_civil' => '',
+        'motivo' => '',
+        'religiao' => 'Católica',
+        'sacramentos' => '',
+        'comunidade' => '',
 
         // Endereço data
         'logradouro' => '',
@@ -100,12 +104,16 @@ $salvar = function () {
             'cpf' => $dados['cpf'],
             'data_nascimento' => $dados['data_nascimento'] ?: null,
             'email' => $dados['email'] ?: null,
-            'tipo_pessoa_id' => 2,
+            'tipo_pessoa_id' => 3,
             'is_problema_saude' => $dados['is_problema_saude'] ?? false,
             'descricao' => $dados['descricao'] ?: null,
             'ja_trabalhou' => $dados['ja_trabalhou'] ?? false,
             'genero' => $dados['genero'] ?: null,
             'estado_civil' => $dados['estado_civil'] ?: null,
+            'motivo' => $dados['motivo'],
+            'religiao' => $dados['religiao'],
+            'sacramento' => $dados['sacramentos'],
+            'comunidade' => $dados['comunidade'],
         ]);
 
         // Save address if provided

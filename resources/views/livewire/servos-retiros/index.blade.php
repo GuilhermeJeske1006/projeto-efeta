@@ -5,7 +5,7 @@ use App\Models\Retiro;
 use App\Models\Equipe;
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
-use function Livewire\Volt\{state, computed, mount};
+use function Livewire\Volt\{state, computed, mount, on};
 
 with(WithPagination::class);
 
@@ -47,6 +47,14 @@ mount(function ($retiroId) {
         return redirect()->route('retiros.index');
     }
 });
+
+on([
+    'pessoa-cadastrada' => function () {
+        // Atualiza a tabela de pessoas após cadastro
+        $this->getPessoas = $this->getPessoas; // Força atualização
+    },
+]);
+
 
 // Computed para buscar equipes baseadas no retiro da URL
 $getEquipes = computed(function () {
@@ -279,6 +287,7 @@ $delete = function ($id) {
 ?>
 
 <div>
+
     <!-- Cabeçalho -->
     <div class="flex items-center justify-between mb-5">
         <div>
@@ -295,9 +304,11 @@ $delete = function ($id) {
                 </svg>
                 Filtros
             </button>
-            <a href="{{ route('servos.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+            <a wire:click="abrirModal" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                 Adicionar Servo
             </a>
+            <livewire:components.modalCreateServos  />
+
         </div>
     </div>
 

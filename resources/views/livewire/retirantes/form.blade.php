@@ -21,6 +21,10 @@ state([
     'ja_trabalhou' => false,
     'genero' => '',
     'estado_civil' => '',
+    'motivo' => '',
+    'religiao' => 'Católica',
+    'sacramentos' => '',
+    'comunidade' => '',
 
     // Endereço data
     'logradouro' => '',
@@ -56,6 +60,10 @@ rules([
     'ja_trabalhou' => ['boolean'],
     'genero' => 'required|in:Masculino,Feminino,Outro',
     'estado_civil' => ['required', 'string'],
+    'motivo' => ['nullable', 'string', 'max:1000'],
+    'religiao' => ['required', 'string', 'max:100'],
+    'sacramentos' => ['nullable', 'string', 'max:255'],
+    'comunidade' => ['nullable', 'string', 'max:255'],
 
     'logradouro' => ['required', 'string', 'max:255'],
     'numero' => ['required', 'string', 'max:20'],
@@ -108,6 +116,11 @@ mount(function () {
     $this->email = $this->dados['email'] ?? '';
     $this->ja_trabalhou = $this->dados['ja_trabalhou'] ?? false;
     $this->is_problema_saude = $this->dados['is_problema_saude'] ?? false;
+    $this->comunidade = $this->dados['comunidade'] ?? '';
+
+    $this->religiao = $this->dados['religiao'] ?? 'Católica';
+    $this->sacramentos = $this->dados['sacramentos'] ?? '';
+    $this->motivo = $this->dados['motivo'] ?? '';
     $this->descricao = $this->dados['descricao'] ?? '';
     $this->logradouro = $this->dados['logradouro'] ?? '';
     $this->numero = $this->dados['numero'] ?? '';
@@ -364,6 +377,11 @@ $enviarDados = function () {
         'ja_trabalhou' => $this->ja_trabalhou,
         'genero' => $this->genero,
         'estado_civil' => $this->estado_civil,
+        'motivo' => $this->motivo,
+        'religiao' => $this->religiao,
+        'sacramentos' => $this->sacramentos,
+        'comunidade' => $this->comunidade,
+        
         
         // Dados do endereço
         'logradouro' => $this->logradouro,
@@ -403,6 +421,20 @@ $enviarDados = function () {
     <!-- Email -->
     <div class="col-span-1">
         <flux:input wire:model="email" :label="__('E-mail')" type="email" required />
+    </div>
+
+    <div class="col-span-1">
+        <flux:input wire:model="sacramentos" :label="__('Sacramentos')" type="text" placeholder="Batismo, Eucaristia, Crisma..."
+            required />
+    </div>
+
+    <!-- Email -->
+    <div class="col-span-1">
+        <flux:input wire:model="comunidade" :label="__('Comunidade')" type="text" required />
+    </div>
+
+    <div class="col-span-1">
+        <flux:input wire:model="religiao" :label="__('Religião')"  type="text" required />
     </div>
 
     <!-- Data de Nascimento -->
@@ -460,6 +492,11 @@ $enviarDados = function () {
                 rows="3" />
         </div>
     @endif
+
+    <div class="col-span-3">
+        <flux:textarea wire:model="motivo" :label="__('Descreva o motivo que fez você buscar a Efeta')"
+            rows="3" />
+    </div>
 
     <!-- Seção de Endereço -->
     <div class="col-span-3 mt-4">

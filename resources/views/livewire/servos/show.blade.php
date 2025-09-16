@@ -61,6 +61,10 @@ $carregarDadosPessoa = function () {
         $this->dados['ja_trabalhou'] = $this->pessoa->ja_trabalhou;
         $this->dados['genero'] = $this->pessoa->genero ?? '';
         $this->dados['estado_civil'] = $this->pessoa->estado_civil ?? '';
+        $this->dados['motivo'] = $this->pessoa->motivo ?? '';
+        $this->dados['religiao'] = $this->pessoa->religiao ?? 'Católica';
+        $this->dados['sacramento'] = $this->pessoa->sacramento ?? '';
+        $this->dados['comunidade'] = $this->pessoa->comunidade ?? '';
 
         // Carregar dados do endereço (primeiro endereço se existir)
         $this->dados['logradouro'] = $this->pessoa->logradouro ?? '';
@@ -177,6 +181,45 @@ $idade = computed(function () {
                                 <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado Civil</label>
                                 <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $dados['estado_civil'] ?? '-' }}</p>
                             </div>
+
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Religião</label>
+                                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $dados['religiao'] ?? '-' }}</p>
+                            </div>
+                            
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Sacramentos</label>
+                                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $dados['sacramento'] ?? '-' }}</p>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Comunidade</label>
+                                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $dados['comunidade'] ?? '-' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Address Card -->
+                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div class="bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 rounded-lg shadow-sm px-6 py-4">
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16h6a2 2 0 002-2V7a2 2 0 00-2-2H9a2 2 0 00-2 2v7a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            Motivo
+                        </h2>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">                            
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">O que fez você buscar a Efeta?</label>
+                                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $dados['motivo'] ?? '-' }}</p>
+                            </div>
+                            
+
                         </div>
                     </div>
                 </div>
