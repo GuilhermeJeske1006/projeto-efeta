@@ -67,6 +67,8 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
     // CONTROLES
     public $menor_idade = false;
 
+    public $showDescricao = false;
+
     public $notification = [
         'show' => false,
         'type' => '',
@@ -678,6 +680,11 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
 
         return $cpf[9] == $digit1 && $cpf[10] == $digit2;
     }
+
+    public function mostrarDescricao()
+    {
+        $this->showDescricao = !$this->showDescricao;
+    }
 }; ?>
 
 <div class="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8" style="min-width: 100%;">
@@ -856,6 +863,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
                 <div class="space-y-4">
                     <div class="flex items-center space-x-4">
                         <input wire:model="is_problema_saude" type="checkbox"
+                        wire:change="mostrarDescricao"
                             class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
                         <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
                             Possui alguma deficiência ou necessidade especial?
@@ -863,6 +871,8 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
                     </div>
 
 
+                    @if ($showDescricao)
+                        
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-1">
                         <div>
                             <flux:textarea wire:model="descricao"
@@ -870,6 +880,8 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
                         </div>
 
                     </div>
+                    @endif
+
 
                 </div>
             </div>

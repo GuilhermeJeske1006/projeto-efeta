@@ -224,6 +224,33 @@ $idade = computed(function () {
                     </div>
                 </div>
 
+                @if ($dados['is_problema_saude'])
+                    
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div class="bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 rounded-lg shadow-sm px-6 py-4">
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-7 4a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2.586a1 1 0 01-.707-.293l-1.414-1.414A1 1 0 0012 3H8a2 2 0 00-2 2v14z"/>
+                                </svg>
+                            </div>
+                            Informações de Saúde e Emergência
+                        </h2>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">                            
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Descrição da deficiência/necessidade especial</label>
+                                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $dados['descricao'] ?? '-' }}</p>
+                            </div>
+                            
+
+                        </div>
+                    </div>
+                </div>
+                @endif
+
                 <!-- Address Card -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
                     <div class="bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 rounded-lg shadow-sm px-6 py-4">
