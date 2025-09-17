@@ -50,11 +50,12 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('configuracoes/permissoes/{id}/edit', 'configuracoes.permissoes.edit')->name('permissoes.edit');
 
 
-    Volt::route('chamamento', 'chamamento.servos')->name('chamamento.index');
+    Volt::route('chamamento', 'chamamento.servos')->name('chamamento.index'); 
 
 });
 
 Volt::route('ficha-inscricao', 'ficha-inscricao.index')->name('ficha-inscricao.index');
+Volt::route('ficha-equipe', 'ficha-equipe.index')->name('ficha-equipe.index');
 
 
 require __DIR__ . '/auth.php';
