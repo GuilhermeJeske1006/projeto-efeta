@@ -222,6 +222,7 @@ $removeServoFromEquipe = function ($pessoaId) {
     
     // Disparar evento para atualização da tabela
     $this->dispatch('servos-equipe-updated');
+    $this->listSelectedEquipes = $this->servosEquipe->toArray(); // Atualizar a tabela
 };
 
 // Adicionar coordenador à equipe
@@ -231,23 +232,35 @@ $setCoordenador = function ($pessoaId) {
         return;
     }
 
-
     try {
-    // Remover o coordenador atual da equipe e retiro
-        \DB::table('pessoa_retiros')
+        // verificar se a pessoa selecionada já é coordenador
+        $isCoordenador = \DB::table('pessoa_retiros')
             ->where('equipe_id', $this->selectedEquipe)
             ->where('retiro_id', $this->retiroId)
-            ->update(['is_coordenador' => false]);
+            ->where('pessoa_id', $pessoaId)
+            ->value('is_coordenador');
+        if ($isCoordenador) {
+            // remover como coordenador
+            \DB::table('pessoa_retiros')
+                ->where('equipe_id', $this->selectedEquipe)
+                ->where('retiro_id', $this->retiroId)
+                ->where('pessoa_id', $pessoaId)
+                ->update(['is_coordenador' => false]);
 
-        // Definir o novo coordenador
-        \DB::table('pessoa_retiros')
+            session()->flash('message', 'Coordenador removido com sucesso!');
+        } else {
+            \DB::table('pessoa_retiros')
             ->where('equipe_id', $this->selectedEquipe)
             ->where('retiro_id', $this->retiroId)
             ->where('pessoa_id', $pessoaId)
             ->update(['is_coordenador' => true]);
 
-        session()->flash('message', 'Coordenador definido com sucesso!');
+            session()->flash('message', 'Coordenador definido com sucesso!');
+
+        }
+
         $this->dispatch('servos-equipe-updated');
+        $this->listSelectedEquipes = $this->servosEquipe->toArray(); // Atualizar a tabela
     } catch (\Exception $th) {
         session()->flash('error', 'Erro ao definir coordenador: ' . $th->getMessage());
     }
