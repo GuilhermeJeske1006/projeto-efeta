@@ -116,7 +116,7 @@ $idade = computed(function () {
 ?>
 
 <div class="min-h-screen">
-    <div class="max-w-7xl mx-auto p-6">
+    <div class="max-w-7xl mx-auto p-0">
 
 
         <div class="flex items-center justify-between mb-5">
@@ -129,16 +129,16 @@ $idade = computed(function () {
         </div>
 
         <!-- Main Content Grid -->
-        <div class="grid gap-8">
+        <div class=" gap-8">
             <!-- Left Column - Personal Data -->
             <div class="space-y-8">
                 
                 <!-- Personal Information Card -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
                     <div class="bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 rounded-lg shadow-sm px-6 py-4">
-                        <h2 class="text-xl font-bold text-white flex items-center">
+                        <h2 class="text-xl font-bold  text-gray-900 dark:text-gray-100 flex items-center">
                             <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-3">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-gray-900 dark:text-gray-100 fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                 </svg>
                             </div>
@@ -203,9 +203,9 @@ $idade = computed(function () {
                  @if ($dados['motivo'])
                  <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
                     <div class="bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 rounded-lg shadow-sm px-6 py-4">
-                        <h2 class="text-xl font-bold text-white flex items-center">
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center">
                             <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-3">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-gray-900 dark:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16h6a2 2 0 002-2V7a2 2 0 00-2-2H9a2 2 0 00-2 2v7a2 2 0 002 2z"/>
                                 </svg>
                             </div>
@@ -234,9 +234,9 @@ $idade = computed(function () {
                     
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
                     <div class="bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 rounded-lg shadow-sm px-6 py-4">
-                        <h2 class="text-xl font-bold text-white flex items-center">
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center">
                             <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-3">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-gray-900 dark:text-gray-100 fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-7 4a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2.586a1 1 0 01-.707-.293l-1.414-1.414A1 1 0 0012 3H8a2 2 0 00-2 2v14z"/>
                                 </svg>
                             </div>
@@ -260,9 +260,9 @@ $idade = computed(function () {
                 <!-- Address Card -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
                     <div class="bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 rounded-lg shadow-sm px-6 py-4">
-                        <h2 class="text-xl font-bold text-white flex items-center">
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center">
                             <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-3">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-gray-900 dark:text-gray-100 fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 </svg>
@@ -309,9 +309,9 @@ $idade = computed(function () {
                 <!-- Phone Numbers Card -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
                     <div class="bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 rounded-lg shadow-sm px-6 py-4">
-                        <h2 class="text-xl font-bold text-white flex items-center">
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center">
                             <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-3">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-gray-900 dark:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.986.836l1.498 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-1C7.82 18 2 12.18 2 5V3z"/>
                                 </svg>
                             </div>
@@ -370,9 +370,9 @@ $idade = computed(function () {
                 @if ($dados['gostaria_de_trabalhar'])
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
                    <div class="bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 rounded-lg shadow-sm px-6 py-4">
-                       <h2 class="text-xl font-bold text-white flex items-center">
+                       <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center">
                            <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-3">
-                               <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                               <svg class="w-5 h-5 text-gray-900 dark:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16h6a2 2 0 002-2V7a2 2 0 00-2-2H9a2 2 0 00-2 2v7a2 2 0 002 2z"/>
                                </svg>
                            </div>
@@ -393,9 +393,9 @@ $idade = computed(function () {
                 <!-- Retiros History Card -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
                     <div class="bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 rounded-lg shadow-sm px-6 py-4">
-                        <h2 class="text-xl font-bold text-white flex items-center">
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center">
                             <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mr-3">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-gray-900 dark:text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                 </svg>
                             </div>

@@ -191,8 +191,10 @@ $updateStatusChamado = function ($pessoaId, $statusId, $retiroId) {
                             <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa['telefone'] ?? 'N/A' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <select 
-                                    class="border w-full rounded px-2 py-1"
+                                    class="border w-full rounded px-2 py-1 md:px-2 md:py-1 text-base md:text-sm"
                                     wire:change="updateStatusChamado({{ $pessoa['id'] }}, $event.target.value, {{ $item['retiro']->id }})"
+                                    x-data
+                                    :style="window.innerWidth < 768 ? 'font-size: 1.1rem; width: 160px;' : 'font-size: 1.1rem;'"
                                 >
                                     @foreach ($this->status_chamado as $status)
                                         <option value="{{ $status->id }}" {{ ($pessoa['status_id'] ?? $pessoa['status_chamado_id']) == $status->id ? 'selected' : '' }}>

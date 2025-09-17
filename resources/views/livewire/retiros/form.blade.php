@@ -81,53 +81,52 @@ $enviarDados = function () {
 ?>
 <div>
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-    <!-- Nome -->
-    <div >
-        <flux:input wire:model="nome" :label="__('Nome do retiro')" type="text" required />
-    </div>
-
-    <!-- Tema -->
-    <div class="col-span-2">
-        <flux:input wire:model="tema" :label="__('Tema')" type="text" 
-            placeholder="" required />
-    </div>
-
-    <!-- Data de Início -->
-    <div>
-        <flux:input wire:model="data_inicio" :label="__('Data de Início')" type="date"
-            required wire:change="validarDatas" />
-    </div>
-
-    <!-- Data de Fim -->
-    <div>
-        <flux:input wire:model="data_fim" :label="__('Data de Fim')" type="date"
-            required wire:change="validarDatas" />
-    </div>
-
-    <!-- Música Tema -->
-    <div>
-        <flux:input wire:model="musica_tema" :label="__('Música Tema (opcional)')" type="text" 
-            placeholder="Nome da música ou artista" />
-    </div>
-
-    <!-- Descrição -->
-    <div class="col-span-3">
-        <flux:textarea wire:model="descricao" :label="__('Descrição do Evento (opcional)')"
-            rows="4" placeholder="Descreva os detalhes do evento..." />
-    </div>
-
-</div>
-
-<div class="flex justify-end space-x-2 pt-4 border-t">
-    <flux:button type="button" variant="primary" wire:click="$refresh">
-        {{ __('Cancelar') }}
-    </flux:button>
-    <flux:button type="button" wire:click="enviarDados" variant="primary">
-        {{ __('Salvar') }}
-    </flux:button>
+        <!-- Nome -->
+        <div class="md:col-span-1">
+            <flux:input wire:model="nome" :label="__('Nome do retiro')" type="text" required />
+        </div>
     
-</div>
+        <!-- Tema -->
+        <div class="md:col-span-2">
+            <flux:input wire:model="tema" :label="__('Tema')" type="text" 
+                placeholder="" required />
+        </div>
+    
+        <!-- Data de Início -->
+        <div class="md:col-span-1">
+            <flux:input wire:model="data_inicio" :label="__('Data de Início')" type="date"
+                required wire:change="validarDatas" />
+        </div>
+    
+        <!-- Data de Fim -->
+        <div class="md:col-span-1">
+            <flux:input wire:model="data_fim" :label="__('Data de Fim')" type="date"
+                required wire:change="validarDatas" />
+        </div>
+    
+        <!-- Música Tema -->
+        <div class="md:col-span-1">
+            <flux:input wire:model="musica_tema" :label="__('Música Tema (opcional)')" type="text" 
+                placeholder="Nome da música ou artista" />
+        </div>
+    
+        <!-- Descrição -->
+        <div class="col-span-1 md:col-span-3">
+            <flux:textarea wire:model="descricao" :label="__('Descrição do Evento (opcional)')"
+                rows="4" placeholder="Descreva os detalhes do evento..." />
+        </div>
+    
+    </div>
+    
+    <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2 pt-4 border-t">
+        <flux:button type="button" variant="primary" wire:click="$refresh">
+            {{ __('Cancelar') }}
+        </flux:button>
+        <flux:button type="button" wire:click="enviarDados" variant="primary">
+            {{ __('Salvar') }}
+        </flux:button>
+    </div>
 
 </div>

@@ -357,6 +357,7 @@ $definirPrincipal = function ($index) {
 };
 
 
+
 $enviarDados = function () {
 
     $this->validate();
@@ -399,239 +400,238 @@ $enviarDados = function () {
 
 ?>
 <div>
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <div class="lg:col-span-3">
+            <h3 class="text-md font-medium mb-2 border-b pb-2">Dados Pessoais</h3>
+        </div>
 
-<div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-    <div class="col-span-3">
-        <h3 class="text-md font-medium mb-2 border-b pb-2">Dados Pessoais</h3>
-    </div>
+        <!-- Nome -->
+        <div class="lg:col-span-1">
+            <flux:input wire:model="nome" :label="__('Nome Completo')" type="text" required />
+        </div>
 
-    <!-- Nome -->
-    <div class="col-span-1">
-        <flux:input wire:model="nome" :label="__('Nome Completo')" type="text" required />
-    </div>
+        <!-- CPF -->
+        <div class="lg:col-span-1">
+            <flux:input wire:model="cpf" :label="__('CPF')" type="text" placeholder="000.000.000-00"
+                required wire:change="formatarEValidarCpf" />
+        </div>
 
-    <!-- CPF -->
-    <div class="col-span-1">
-        <flux:input wire:model="cpf" :label="__('CPF')" type="text" placeholder="000.000.000-00"
-            required wire:change="formatarEValidarCpf" />
-    </div>
+        <!-- Email -->
+        <div class="lg:col-span-1">
+            <flux:input wire:model="email" :label="__('E-mail')" type="email" required />
+        </div>
 
-    <!-- Email -->
-    <div class="col-span-1">
-        <flux:input wire:model="email" :label="__('E-mail')" type="email" required />
-    </div>
+        <!-- Sacramentos -->
+        <div class="lg:col-span-1">
+            <flux:input wire:model="sacramentos" :label="__('Sacramentos')" type="text" placeholder="Batismo, Eucaristia, Crisma..."
+                required />
+        </div>
 
-    <div class="col-span-1">
-        <flux:input wire:model="sacramentos" :label="__('Sacramentos')" type="text" placeholder="Batismo, Eucaristia, Crisma..."
-            required />
-    </div>
+        <!-- Comunidade -->
+        <div class="lg:col-span-1">
+            <flux:input wire:model="comunidade" :label="__('Comunidade')" type="text" required />
+        </div>
 
-    <!-- Email -->
-    <div class="col-span-1">
-        <flux:input wire:model="comunidade" :label="__('Comunidade')" type="text" required />
-    </div>
+        <!-- Religião -->
+        <div class="lg:col-span-1">
+            <flux:input wire:model="religiao" :label="__('Religião')" type="text" required />
+        </div>
 
-    <div class="col-span-1">
-        <flux:input wire:model="religiao" :label="__('Religião')"  type="text" required />
-    </div>
+        <!-- Data de Nascimento -->
+        <div class="lg:col-span-1">
+            <flux:input wire:model="data_nascimento" :label="__('Data de Nascimento')" type="date"
+                required />
+        </div>
 
-    <!-- Data de Nascimento -->
-    <div class="col-span-1">
-        <flux:input wire:model="data_nascimento" :label="__('Data de Nascimento')" type="date"
-            required />
-    </div>
-
-    <!-- Gênero -->
-    <div class="col-span-1">
-        <flux:select wire:model="genero" :label="__('Gênero')">
-            <flux:select.option value="" disabled>
-                {{ __('Selecione o gênero') }}
-            </flux:select.option>
-            @foreach ($generos as $item)
-                <flux:select.option value="{{ $item }}">
-                    {{ $item }}
+        <!-- Gênero -->
+        <div class="lg:col-span-1">
+            <flux:select wire:model="genero" :label="__('Gênero')">
+                <flux:select.option value="" disabled>
+                    {{ __('Selecione o gênero') }}
                 </flux:select.option>
-            @endforeach
-        </flux:select>
-    </div>
-
-    <!-- Estado Civil -->
-    <div class="col-span-1">
-        <flux:select wire:model="estado_civil" :label="__('Estado Civil')">
-            <flux:select.option value="" disabled>
-                {{ __('Selecione o estado civil') }}
-            </flux:select.option>
-            @foreach ($estadosCivis as $item)
-                <flux:select.option value="{{ $item }}">{{ $item }}</flux:select.option>
-            @endforeach
-        </flux:select>
-    </div>
-
-    <!-- Problemas de Saúde -->
-    <div class="flex items-end">
-
-        <div class="flex items-center h-5">
-            <input wire:model="is_problema_saude" wire:change="openProblema" type="checkbox"
-            class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-            @if($is_problema_saude) checked @endif>
+                @foreach ($generos as $item)
+                    <flux:select.option value="{{ $item }}">
+                        {{ $item }}
+                    </flux:select.option>
+                @endforeach
+            </flux:select>
         </div>
-        <div class="ml-3 text-sm">
-            <label class="font-medium text-gray-700 dark:text-gray-300">
-                {{ __('Possui problema de saúde?') }}
-            </label>
+
+        <!-- Estado Civil -->
+        <div class="lg:col-span-1">
+            <flux:select wire:model="estado_civil" :label="__('Estado Civil')">
+                <flux:select.option value="" disabled>
+                    {{ __('Selecione o estado civil') }}
+                </flux:select.option>
+                @foreach ($estadosCivis as $item)
+                    <flux:select.option value="{{ $item }}">{{ $item }}</flux:select.option>
+                @endforeach
+            </flux:select>
         </div>
-    </div>
 
+        <!-- Problemas de Saúde -->
+        <div class="lg:col-span-3 flex items-center space-x-3">
+            <div class="flex items-center">
+                <input wire:model="is_problema_saude" wire:change="openProblema" type="checkbox"
+                class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                @if($is_problema_saude) checked @endif>
+            </div>
+            <div class="text-sm">
+                <label class="font-medium text-gray-700 dark:text-gray-300">
+                    {{ __('Possui problema de saúde?') }}
+                </label>
+            </div>
+        </div>
 
-    <!-- Descrição de Saúde (condicionalmente exibido) -->
-    @if ($is_problema_saude)
-        <div class="col-span-3">
-            <flux:textarea wire:model="descricao" :label="__('Descreva o problema de saúde')"
+        <!-- Descrição de Saúde (condicionalmente exibido) -->
+        @if ($is_problema_saude)
+            <div class="lg:col-span-3">
+                <flux:textarea wire:model="descricao" :label="__('Descreva o problema de saúde')"
+                    rows="3" />
+            </div>
+        @endif
+
+        <!-- Motivo -->
+        <div class="lg:col-span-3">
+            <flux:textarea wire:model="motivo" :label="__('Descreva o motivo que fez você buscar a Efeta')"
                 rows="3" />
         </div>
-    @endif
 
-    <div class="col-span-3">
-        <flux:textarea wire:model="motivo" :label="__('Descreva o motivo que fez você buscar a Efeta')"
-            rows="3" />
-    </div>
-
-    <!-- Seção de Endereço -->
-    <div class="col-span-3 mt-4">
-        <h3 class="text-md font-medium mb-2 border-b pb-2">Endereço</h3>
-    </div>
-
-    <!-- CEP -->
-    <div>
-        <div class="flex space-x-2">
-            <div class="flex-grow">
-                <flux:input wire:model="cep" :label="__('CEP')" type="text"
-                    placeholder="00000-000" required />
-            </div>
-            <div class="flex items-end">
-                <flux:button type="button" wire:click="buscarCep">
-                    {{ __('Buscar') }}
-                </flux:button>
-            </div>
+        <!-- Seção de Endereço -->
+        <div class="lg:col-span-3 mt-6">
+            <h3 class="text-md font-medium mb-2 border-b pb-2">Endereço</h3>
         </div>
-        @error('cep')
-            <span class="text-red-500 text-sm">{{ $message }}</span>
-        @enderror
-    </div>
 
-    <!-- Logradouro -->
-    <div class="col-span-2">
-        <flux:input wire:model="logradouro" :label="__('Logradouro')" type="text" required />
-    </div>
-
-    <!-- Número -->
-    <div>
-        <flux:input wire:model="numero" :label="__('Número')" type="text" required />
-    </div>
-
-    <!-- Complemento -->
-    <div>
-        <flux:input wire:model="complemento" :label="__('Complemento')" type="text" />
-
-    </div>
-
-    <!-- Bairro -->
-    <div>
-        <flux:input wire:model="bairro" :label="__('Bairro')" type="text" required />
-
-    </div>
-
-    <!-- Cidade -->
-    <div>
-        <flux:input wire:model="cidade" :label="__('Cidade')" type="text" required />
-
-    </div>
-
-    <!-- Seção de Telefones -->
-    <div class="col-span-3 mt-4">
-        <h3 class="text-md font-medium mb-2 border-b pb-2">Telefones</h3>
-    </div>
-
-    <!-- Lista de Telefones -->
-    <div class="col-span-3">
-        @foreach ($telefones as $index => $telefone)
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-3 mb-4 border-b pb-4">
-                <!-- Número -->
-                <div class="col-span-1">
-                    <flux:input wire:model="telefones.{{ $index }}.numero"
-                        wire:change="formatarEValidarTelefone({{ $index }})" :label="__('Número')"
-                        type="text" placeholder="(00) 00000-0000" required />
+        <!-- CEP -->
+        <div class="lg:col-span-1">
+            <div class="space-y-2 sm:space-y-0 sm:flex sm:space-x-2">
+                <div class="flex-grow">
+                    <flux:input wire:model="cep" :label="__('CEP')" type="text"
+                        placeholder="00000-000" required />
                 </div>
-
-                <!-- Tipo -->
-                <div class="col-span-1">
-                    <flux:select wire:model="telefones.{{ $index }}.tipo"
-                        :label="__('Tipo')" required>
-                        @foreach ($tiposTelefone as $item)
-                            <flux:select.option value="{{ $item }}">{{ $item }}
-                            </flux:select.option>
-                        @endforeach
-                    </flux:select>
+                <div class="sm:flex sm:items-end">
+                    <flux:button type="button" wire:click="buscarCep" class="w-full sm:w-auto">
+                        {{ __('Buscar') }}
+                    </flux:button>
                 </div>
+            </div>
+            @error('cep')
+                <span class="text-red-500 text-sm">{{ $message }}</span>
+            @enderror
+        </div>
 
-                <!-- Nome da Pessoa -->
-                <div class="col-span-1 flex items-end space-x-2">
-                    <div class="flex-grow">
-                        <flux:input wire:model="telefones.{{ $index }}.nome_pessoa"
-                            :label="__('Nome de Contato (opcional)')" type="text" />
+        <!-- Logradouro -->
+        <div class="lg:col-span-2">
+            <flux:input wire:model="logradouro" :label="__('Logradouro')" type="text" required />
+        </div>
+
+        <!-- Número -->
+        <div class="lg:col-span-1">
+            <flux:input wire:model="numero" :label="__('Número')" type="text" required />
+        </div>
+
+        <!-- Complemento -->
+        <div class="lg:col-span-1">
+            <flux:input wire:model="complemento" :label="__('Complemento')" type="text" />
+        </div>
+
+        <!-- Bairro -->
+        <div class="lg:col-span-1">
+            <flux:input wire:model="bairro" :label="__('Bairro')" type="text" required />
+        </div>
+
+        <!-- Cidade -->
+        <div class="lg:col-span-3">
+            <flux:input wire:model="cidade" :label="__('Cidade')" type="text" required />
+        </div>
+
+        <!-- Seção de Telefones -->
+        <div class="lg:col-span-3 mt-6">
+            <h3 class="text-md font-medium mb-2 border-b pb-2">Telefones</h3>
+        </div>
+
+        <!-- Lista de Telefones -->
+        <div class="lg:col-span-3">
+            @foreach ($telefones as $index => $telefone)
+                <div class="space-y-4 mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+                    <!-- Container responsivo para telefone -->
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        <!-- Número -->
+                        <div class="sm:col-span-1">
+                            <flux:input wire:model="telefones.{{ $index }}.numero"
+                                wire:change="formatarEValidarTelefone({{ $index }})" :label="__('Número')"
+                                type="text" placeholder="(00) 00000-0000" required />
+                        </div>
+
+                        <!-- Tipo -->
+                        <div class="sm:col-span-1">
+                            <flux:select wire:model="telefones.{{ $index }}.tipo"
+                                :label="__('Tipo')" required>
+                                @foreach ($tiposTelefone as $item)
+                                    <flux:select.option value="{{ $item }}">{{ $item }}
+                                    </flux:select.option>
+                                @endforeach
+                            </flux:select>
+                        </div>
+
+                        <!-- Nome da Pessoa -->
+                        <div class="sm:col-span-2 lg:col-span-1">
+                            <flux:input wire:model="telefones.{{ $index }}.nome_pessoa"
+                                :label="__('Nome de Contato (opcional)')" type="text" />
+                        </div>
                     </div>
-                    <div class="pb-1">
+
+                    <!-- Linha para checkbox e botão de remover -->
+                    <div class="flex items-center justify-between pt-2">
+                        <!-- Checkbox Principal -->
+                        <div class="flex items-center space-x-3">
+                            <div class="flex items-center">
+                                <input type="checkbox"
+                                wire:model="telefones.{{ $index }}.is_principal"
+                                class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                                wire:click="definirPrincipal({{ $index }})"
+                                @if($telefone['is_principal']) checked @endif>
+                            </div>
+                            <div class="text-sm">
+                                <label class="font-medium text-gray-700 dark:text-gray-300">
+                                    {{ __('Telefone principal?') }}
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Botão Remover -->
                         @if (count($telefones) > 1)
                             <flux:button type="button" variant="danger"
-                                wire:click="removerTelefone({{ $index }})" class="px-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                wire:click="removerTelefone({{ $index }})" class="px-3 py-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
                                     viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd"
                                         d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
                                         clip-rule="evenodd" />
                                 </svg>
+                                <span class="ml-1 hidden sm:inline">{{ __('Remover') }}</span>
                             </flux:button>
                         @endif
                     </div>
                 </div>
-                <div class="flex items-end">
+            @endforeach
 
-                    <div class="flex items-center h-5">
-                        <input type="checkbox"
-                        wire:model="telefones.{{ $index }}.is_principal"
-                        class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                        wire:click="definirPrincipal({{ $index }})"
-                        @if($telefone['is_principal']) checked @endif
-                        
-                    >
-                    </div>
-
-                    <div class="ml-3 text-sm">
-                        <label class="font-medium text-gray-700 dark:text-gray-300">
-                            {{ __('Telefone principal?') }}
-                        </label>
-                    </div>
-                </div>
+            <!-- Botão Adicionar Telefone -->
+            <div class="flex justify-center sm:justify-end mb-4">
+                <flux:button type="button" wire:click="adicionarTelefone" class="w-full sm:w-auto">
+                    {{ __('Adicionar Telefone') }}
+                </flux:button>
             </div>
-        @endforeach
-
-        <!-- Botão Adicionar Telefone -->
-        <div class="flex justify-end mb-3">
-            <flux:button type="button" wire:click="adicionarTelefone">
-
-                {{ __('Adicionar Telefone') }}
-            </flux:button>
         </div>
     </div>
 
+    <!-- Botões de Ação -->
+    <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2 pt-6 border-t mt-6">
+        <flux:button type="button" variant="primary" wire:click="$refresh" class="w-full sm:w-auto order-2 sm:order-1 mt-2 sm:mt-0">
+            {{ __('Cancelar') }}
+        </flux:button>
+        <flux:button type="button" wire:click="enviarDados" variant="primary" class="w-full sm:w-auto order-1 sm:order-2">
+            {{ __('Enviar Dados') }}
+        </flux:button>
+    </div>
 </div>
-<div class="flex justify-end space-x-2 pt-4 border-t">
-    <flux:button type="button" variant="primary" wire:click="$refresh">
-        {{ __('Cancelar') }}
-    </flux:button>
-    <flux:button type="button" wire:click="enviarDados" variant="primary">
-        {{ __('Enviar Dados') }}
-    </flux:button>
-</div>
-</div>
-

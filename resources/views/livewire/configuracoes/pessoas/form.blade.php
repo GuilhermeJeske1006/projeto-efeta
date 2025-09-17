@@ -128,52 +128,50 @@ $enviarDados = function () {
 ?>
 <div>
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    <div class="col-span-3">
-        <h3 class="text-md font-medium mb-2 border-b pb-2">Dados Pessoais</h3>
-    </div>
-
-    <!-- Nome -->
-    <div>
-        <flux:input wire:model="nome" :label="__('Nome Completo')" type="text" required />
-    </div>
- 
-    <!-- Email -->
-    <div>
-        <flux:input wire:model="email" :label="__('E-mail')" type="email" required />
-    </div>
-
-    <!-- Data de Nascimento -->
-    <div>
-        <flux:input wire:model="telefone" :label="__('Telefone')" type="text" placeholder="(00) 00000-0000"
-            required oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\d{2})(\d{5})?(\d{4})?/, function(_, ddd, prefix, suffix) { return '(' + ddd + ') ' + (prefix || '') + (suffix ? '-' + suffix : ''); })" />
-    </div>
-
-    <!-- Gênero -->
-    <div>
-        <flux:select wire:model="role_id" :label="__('Função')" required>
-            <flux:select.option value="" disabled>
-                {{ __('Selecione a função') }}
-            </flux:select.option>
-            @foreach ($this->roles as $role)
-                <flux:select.option value="{{ $role->id }}">
-                    {{ $role->nome }}
-                </flux:select.option>
-            @endforeach
-        </flux:select>
-
-    </div>
-
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="col-span-1 md:col-span-3">
+            <h3 class="text-md font-medium mb-2 border-b pb-2">Dados Pessoais</h3>
+        </div>
     
-
+        <!-- Nome -->
+        <div class="md:col-span-1">
+            <flux:input wire:model="nome" :label="__('Nome Completo')" type="text" required />
+        </div>
+     
+        <!-- Email -->
+        <div class="md:col-span-1">
+            <flux:input wire:model="email" :label="__('E-mail')" type="email" required />
+        </div>
+    
+        <!-- Telefone -->
+        <div class="md:col-span-1">
+            <flux:input wire:model="telefone" :label="__('Telefone')" type="text" placeholder="(00) 00000-0000"
+                required oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/(\d{2})(\d{5})?(\d{4})?/, function(_, ddd, prefix, suffix) { return '(' + ddd + ') ' + (prefix || '') + (suffix ? '-' + suffix : ''); })" />
+        </div>
+    
+        <!-- Função -->
+        <div class="md:col-span-1">
+            <flux:select wire:model="role_id" :label="__('Função')" required>
+                <flux:select.option value="" disabled>
+                    {{ __('Selecione a função') }}
+                </flux:select.option>
+                @foreach ($this->roles as $role)
+                    <flux:select.option value="{{ $role->id }}">
+                        {{ $role->nome }}
+                    </flux:select.option>
+                @endforeach
+            </flux:select>
+        </div>
+    
+    </div>
+    
+    <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2 pt-4">
+        <flux:button type="button" variant="primary" wire:click="$refresh">
+            {{ __('Cancelar') }}
+        </flux:button>
+        <flux:button type="button" wire:click="enviarDados" variant="primary">
+            {{ __('Enviar Dados') }}
+        </flux:button>
+    </div>
+    
 </div>
-<div class="flex justify-end space-x-2 pt-4 ">
-    <flux:button type="button" variant="primary" wire:click="$refresh">
-        {{ __('Cancelar') }}
-    </flux:button>
-    <flux:button type="button" wire:click="enviarDados" variant="primary">
-        {{ __('Enviar Dados') }}
-    </flux:button>
-</div>
-</div>
-
