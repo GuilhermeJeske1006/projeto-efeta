@@ -203,6 +203,8 @@ $removeRetiranteRetiro = function ($pessoaId) {
     
     // Disparar evento para atualização da tabela
     $this->dispatch('servos-equipe-updated');
+
+    $this->listSelectedEquipes = $this->servosEquipe->toArray(); // Atualizar a tabela
 };
 
 // Cancelar modo de seleção
