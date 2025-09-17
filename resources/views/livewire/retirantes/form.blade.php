@@ -334,15 +334,6 @@ $formatarEValidarTelefone = function ($index) {
     }
 };
 
-$definirPrincipal = function ($index) {
-    foreach ($this->telefones as $i => &$telefone) {
-        // Define como principal apenas o telefone do índice selecionado
-        $telefone['is_principal'] = ($i === $index);
-    }
-    unset($telefone); // Evita problemas com referência persistente
-};
-
-
 
 $updatedTelefones = function ($value, $key) {
     if (str_contains($key, 'numero')) {
@@ -356,7 +347,14 @@ $updatedTelefones = function ($value, $key) {
     }
 };
 
- 
+
+$definirPrincipal = function ($index) {
+    foreach ($this->telefones as $i => &$telefone) {
+        // Define como principal apenas o telefone do índice selecionado
+        $telefone['is_principal'] = ($i === $index);
+    }
+    unset($telefone); // Evita problemas com referência persistente
+};
 
 
 $enviarDados = function () {
