@@ -321,6 +321,9 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
                 $this->save($dados);
             }
 
+            // Log de inscrição
+            \Log::channel('equipeCadatrada')->info('Nova inscrição na equipe de trabalho', ['cpf' => $dados['cpf'], 'email' => $dados['email'], 'nome' => $dados['nome'], 'data_cadastro' => now()]);
+
             $this->showNotification('success', 'Inscrição realizada com sucesso!');
 
             // Opcionalmente, redirecionar ou limpar formulário
