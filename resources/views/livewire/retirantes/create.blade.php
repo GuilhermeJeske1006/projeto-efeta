@@ -91,10 +91,10 @@ $salvar = function () {
         $dados = $this->dadosFormulario;
 
         // Check if email or CPF already exists
-        $existingPessoa = Pessoa::where('cpf', $dados['cpf'])->orWhere('email', $dados['email'])->first();
+        $existingPessoa = Pessoa::where('cpf', $dados['cpf'])->first();
 
         if ($existingPessoa) {
-            $this->showNotification('error', 'CPF ou e-mail já cadastrado.');
+            $this->showNotification('error', 'Essa pessoa já existe na nossa base.');
             return;
         }
 

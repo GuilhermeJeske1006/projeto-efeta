@@ -13,6 +13,7 @@ class PessoaRetiro extends Model
         'tipo_id',
         'status_id',
         'is_coordenador',
+        'justificativa_cancelamento',
     ];
 
     protected $table = 'pessoa_retiros';

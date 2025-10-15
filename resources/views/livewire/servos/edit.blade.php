@@ -67,14 +67,8 @@ mount(function ($id = null) {
 // Load person data
 $carregarDadosPessoa = function () {
     try {
-        $this->pessoa = DB::table('pessoas')
-                ->leftJoin('enderecos_pessoas', 'enderecos_pessoas.pessoa_id', '=', 'pessoas.id')
-                ->leftJoin('enderecos', 'enderecos.id', '=', 'enderecos_pessoas.endereco_id')
-                ->where('pessoas.id', $this->pessoaId)
-                ->select('pessoas.*', 'enderecos.*')
-                ->limit(1)
-                ->first();
-                
+        $this->pessoa = DB::table('pessoas')->leftJoin('enderecos_pessoas', 'enderecos_pessoas.pessoa_id', '=', 'pessoas.id')->leftJoin('enderecos', 'enderecos.id', '=', 'enderecos_pessoas.endereco_id')->where('pessoas.id', $this->pessoaId)->select('pessoas.*', 'enderecos.*')->limit(1)->first();
+
         $this->telefones = DB::table('telefones')->where('pessoa_id', $this->pessoaId)->get()->toArray();
 
         // Carregar dados básicos da pessoa
@@ -177,18 +171,39 @@ $atualizar = function () {
         if (!empty($dados['logradouro']) || !empty($dados['cep'])) {
             $endereco = DB::table('pessoas')->join('enderecos_pessoas', 'enderecos_pessoas.pessoa_id', '=', 'pessoas.id')->join('enderecos', 'enderecos.id', '=', 'enderecos_pessoas.endereco_id')->where('pessoas.id', $this->pessoaId)->select('enderecos.*')->limit(1)->first();
 
-            $endereco = Endereco::find($endereco->id);
-            // Update existing address
-            $endereco->update([
-                'logradouro' => $dados['logradouro'] ?: '',
-                'numero' => $dados['numero'] ?: '',
-                'complemento' => $dados['complemento'] ?: '',
-                'bairro' => $dados['bairro'] ?: '',
-                'cidade' => $dados['cidade'] ?: '',
-                'estado' => $dados['estado'] ?: 'SC',
-                'cep' => $dados['cep'] ?: '',
-                'pais' => $dados['pais'] ?: 'Brasil',
-            ]);
+            if (!empty($endereco) || $endereco !== null) {
+                // Update existing address
+                $enderecoModel = Endereco::find($endereco->id);
+                if ($enderecoModel) {
+                    $enderecoModel->update([
+                        'logradouro' => $dados['logradouro'] ?: '',
+                        'numero' => $dados['numero'] ?: '',
+                        'complemento' => $dados['complemento'] ?: '',
+                        'bairro' => $dados['bairro'] ?: '',
+                        'cidade' => $dados['cidade'] ?: '',
+                        'estado' => $dados['estado'] ?: 'SC',
+                        'cep' => $dados['cep'] ?: '',
+                        'pais' => $dados['pais'] ?: 'Brasil',
+                    ]);
+                }
+            } else {
+                // Create new address and associate with person
+                $novoEndereco = Endereco::create([
+                    'logradouro' => $dados['logradouro'] ?: '',
+                    'numero' => $dados['numero'] ?: '',
+                    'complemento' => $dados['complemento'] ?: '',
+                    'bairro' => $dados['bairro'] ?: '',
+                    'cidade' => $dados['cidade'] ?: '',
+                    'estado' => $dados['estado'] ?: 'SC',
+                    'cep' => $dados['cep'] ?: '',
+                    'pais' => $dados['pais'] ?: 'Brasil',
+                ]);
+                // Associate address with person
+                DB::table('enderecos_pessoas')->insert([
+                    'pessoa_id' => $this->pessoaId,
+                    'endereco_id' => $novoEndereco->id,
+                ]);
+            }
         }
 
         // Update phone numbers
@@ -215,7 +230,7 @@ $atualizar = function () {
                             'numero' => $telefone['numero'],
                             'tipo' => $telefone['tipo'] ?? 'celular',
                             'nome_pessoa' => $telefone['nome_pessoa'] ?: $dados['nome'],
-                            'pessoa_id' => $this->pessoa->id,
+                            'pessoa_id' => $this->pessoaId,
                             'is_principal' => $telefone['is_principal'] ?? false,
                         ]);
                         $updatedPhoneIds[] = $novoTelefone->id;
@@ -258,7 +273,7 @@ $atualizar = function () {
             <p class="">Informe os dados abaixo e edite o servo</p>
         </div>
         <a href="{{ route('servos.index') }}"
-        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 w-full md:w-auto justify-center">
+            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 w-full md:w-auto justify-center">
             Voltar a lista
         </a>
     </div>

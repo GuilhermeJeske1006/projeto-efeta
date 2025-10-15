@@ -420,7 +420,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
                 'aceita_imagem' => $this->aceita_imagem,
             ];
 
-            $existingPessoa = Pessoa::where('cpf', $dados['cpf'])->orWhere('email', $dados['email'])->first();
+            $existingPessoa = Pessoa::where('cpf', $dados['cpf'])->first();
 
             if ($existingPessoa) {
 
@@ -913,7 +913,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
                         <input wire:model="aceita_imagem" type="checkbox"
                             class="h-4 w-4 text-indigo-600 border-gray-300 rounded mt-1">
                         <label class="text-sm text-gray-700 dark:text-gray-300">
-                            Autorizo o uso de minha imagem em materiais de divulgação da instituição
+                            Autorizo o uso de minha imagem em materiais de divulgação do movimento
                         </label>
                     </div>
 

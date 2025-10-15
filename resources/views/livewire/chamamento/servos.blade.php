@@ -26,6 +26,11 @@ state([
         'type' => '',
         'message' => '',
     ],
+    'modalVisible' => false,
+    'justificativa' => '',
+    'selectedStatus' => null,
+    'selectedPessoaId' => null,
+    'selectedRetiroId' => null,
 ]);
 
 mount(function () {
@@ -112,6 +117,8 @@ $getServos = function () {
 };
 
 $updateStatusChamado = function ($pessoaId, $statusId, $retiroId) {
+
+
     try {
         $pessoaRetiro = \App\Models\PessoaRetiro::where('pessoa_id', $pessoaId)
             ->where('retiro_id', $retiroId)
@@ -126,14 +133,111 @@ $updateStatusChamado = function ($pessoaId, $statusId, $retiroId) {
 
         $this->showNotification('success', 'Status do chamado atualizado com sucesso');
 
+        if (in_array($statusId, [8, 9, 10])) {
+            $this->modalVisible = true;
+            $this->selectedStatus = $statusId;
+            $this->selectedPessoaId = $pessoaId;
+            $this->selectedRetiroId = $retiroId;
+        }
+
     } catch (\Exception $e) {
         $this->showNotification('error', 'Erro ao atualizar o status do chamado: ' . $e->getMessage());
     }
+};
+
+$saveJustificativa = function () {
+    try {
+        if (!$this->justificativa) {
+            $this->showNotification('error', 'A justificativa é obrigatória.');
+            return;
+        }
+
+        $pessoaRetiro = \App\Models\PessoaRetiro::where('pessoa_id', $this->selectedPessoaId)
+            ->where('retiro_id', $this->selectedRetiroId)
+            ->first();
+
+        if (!$pessoaRetiro) {
+            throw new \Exception('Pessoa não encontrada no retiro especificado.');
+        }
+
+        $pessoaRetiro->justificativa_cancelamento = $this->justificativa;
+        $pessoaRetiro->save();
+
+        $this->modalVisible = false;
+        $this->justificativa = '';
+        $this->selectedStatus = null;
+        $this->selectedPessoaId = null;
+        $this->selectedRetiroId = null;
+
+        $this->showNotification('success', 'Status do chamado atualizado com sucesso');
+    } catch (\Exception $e) {
+        $this->showNotification('error', 'Erro ao salvar a justificativa: ' . $e->getMessage());
+    }
+};
+
+$fecharModal = function () {
+    $this->modalVisible = false;
+    $this->justificativa = '';
+    $this->selectedStatus = null;
+    $this->selectedPessoaId = null;
+    $this->selectedRetiroId = null;
 };
 ?>
 
 <div>
     <livewire:components.notification :notification="$notification" />
+
+    @if ($modalVisible)
+    <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-30 transition-opacity" aria-hidden="true" wire:click="fecharModal"></div>
+
+            <!-- Modal panel -->
+            <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
+                <div class="absolute top-0 right-0 pt-4 pr-4">
+                    <button type="button" class="bg-white dark:bg-gray-800 rounded-md text-gray-400 hover:text-gray-600 focus:outline-none" wire:click="fecharModal">
+                        <span class="sr-only">Fechar</span>
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="sm:flex sm:items-start">
+                    <div class="w-full">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mb-6" id="modal-title">
+                            Justificativa 
+                        </h3>
+
+                        <form wire:submit.prevent="saveJustificativa">
+                            <div class="grid  gap-6 ">
+                                <textarea 
+                                wire:model.live="justificativa" 
+                                class="w-full border rounded p-2 mb-4" 
+                                rows="4" 
+                                placeholder="Informe a justificativa..."
+                            ></textarea>
+                               
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="mt-6 flex justify-end space-x-3">
+                                <flux:button type="button" variant="ghost" wire:click="fecharModal">
+                                    Cancelar
+                                </flux:button>
+                                <flux:button type="submit" variant="primary">
+                                    Salvar
+                                </flux:button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+    @endif
 
     @foreach ($this->getServos() as $item)
     <div class="mb-8">

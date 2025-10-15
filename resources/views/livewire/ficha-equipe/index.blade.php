@@ -31,6 +31,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
     public $sacramento = 'Batismo, Eucaristia, Crisma';
     public $comunidade = '';
     public $gostaria_de_trabalhar = '';
+    public $trabalha_onde_comunidade = '';
 
     // RESPONSÁVEIS ADICIONAIS
     public $nome_pessoa = '';
@@ -91,6 +92,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
             'religiao' => ['required', 'string', 'max:100'],
             'sacramento' => ['nullable', 'string', 'max:255'],
             'comunidade' => ['nullable', 'string', 'max:255'],
+            'gostaria_de_trabalhar' => ['nullable', 'string', 'max:1000'],
 
             // Endereço
             'cep' => ['required', 'string', 'size:9'],
@@ -124,6 +126,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
             'genero.required' => 'Selecione um gênero',
             'estado_civil.required' => 'Selecione um estado civil',
             'religiao.required' => 'A religião é obrigatória',
+            'gostaria_de_trabalhar.max' => 'O campo "Gostaria de trabalhar" deve ter no máximo 1000 caracteres',
 
             // Endereço
             'cep.required' => 'O CEP é obrigatório',
@@ -288,6 +291,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
                 'sacramento' => $this->sacramento,
                 'comunidade' => $this->comunidade,
                 'gostaria_de_trabalhar' => $this->gostaria_de_trabalhar,
+                'trabalha_onde_comunidade' => $this->trabalha_onde_comunidade,
 
                 // Endereço
                 'cep' => $this->cep,
@@ -305,7 +309,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
             ];
 
             // Verificar se já existe pessoa com mesmo CPF ou email
-            $existingPessoa = Pessoa::where('cpf', $dados['cpf'])->orWhere('email', $dados['email'])->first();
+            $existingPessoa = Pessoa::where('cpf', $dados['cpf'])->first();
 
 
             if ($existingPessoa) {
@@ -356,6 +360,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
             'sacramento' => $dados['sacramento'],
             'comunidade' => $dados['comunidade'],
             'gostaria_de_trabalhar' => $dados['gostaria_de_trabalhar'],
+            'trabalha_onde_comunidade' => $dados['trabalha_onde_comunidade'],
         ]);
 
         // Save address if provided
@@ -404,6 +409,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
             'sacramento' => $dados['sacramento'] ?: null,
             'comunidade' => $dados['comunidade'] ?: null,
             'gostaria_de_trabalhar' => $dados['gostaria_de_trabalhar'],
+            'trabalha_onde_comunidade' => $dados['trabalha_onde_comunidade'],
         ]);
 
         // Atualizar ou criar endereço
@@ -583,6 +589,20 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
                     <div>
                         <flux:input wire:model="comunidade" :label="__('Comunidade que frequênta')" type="text" />
                     </div>
+
+                    
+                </div>
+                <div class="pt-6">
+    
+                    <div class="space-y-4">
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-1">
+                                <div>
+                                    <flux:textarea wire:model="trabalha_onde_comunidade"
+                                        :label="__('Informe se você alguma trabalho na sua comunidade (Musica, Litirgia, Pascom)')" rows="4" />
+                                </div>
+    
+                            </div>
+                    </div>
                 </div>
             </div>
 
@@ -692,7 +712,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
                         <div class="grid grid-cols-1 gap-4 md:grid-cols-1">
                             <div>
                                 <flux:textarea wire:model="gostaria_de_trabalhar"
-                                    :label="__('Liste onde você gostria de trabalhar')" rows="4" />
+                                    :label="__('Liste onde você gostaria de trabalhar')" rows="4" />
                             </div>
 
                         </div>

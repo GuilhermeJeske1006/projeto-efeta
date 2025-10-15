@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('comunidade')->nullable();
             $table->string('religiao')->nullable();
             $table->booleatextn('gostaria_de_trabalhar')->nullable();
+            $table->text('trabalha_onde_comunidade')->nullable();
         });
     }
 

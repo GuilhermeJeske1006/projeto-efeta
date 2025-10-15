@@ -26,6 +26,7 @@ class Pessoa extends Model
         'comunidade',
         'religiao',
         'gostaria_de_trabalhar',
+        'trabalha_onde_comunidade',
     ];
 
     protected $casts = [

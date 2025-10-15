@@ -66,6 +66,7 @@ $carregarDadosPessoa = function () {
         $this->dados['sacramento'] = $this->pessoa->sacramento ?? '';
         $this->dados['comunidade'] = $this->pessoa->comunidade ?? '';
         $this->dados['gostaria_de_trabalhar'] = $this->pessoa->gostaria_de_trabalhar ?? '';
+        $this->dados['trabalha_onde_comunidade'] = $this->pessoa->trabalha_onde_comunidade ?? '';
 
         // Carregar dados do endereço (primeiro endereço se existir)
         $this->dados['logradouro'] = $this->pessoa->logradouro ?? '';
@@ -129,7 +130,7 @@ $idade = computed(function () {
         </div>
 
         <!-- Main Content Grid -->
-        <div class=" gap-8">
+        <div class="gap-8">
             <!-- Left Column - Personal Data -->
             <div class="space-y-8">
                 
@@ -196,11 +197,15 @@ $idade = computed(function () {
                                 <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Comunidade</label>
                                 <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $dados['comunidade'] ?? '-' }}</p>
                             </div>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">O que faz na comunidade</label>
+                                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $dados['trabalha_onde_comunidade'] ?? '-' }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                 @if ($dados['motivo'])
+                 @if ($dados['motivo'] && auth()->user()->role_id != 3)
                  <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
                     <div class="bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 rounded-lg shadow-sm px-6 py-4">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center">
@@ -218,16 +223,11 @@ $idade = computed(function () {
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">O que fez você buscar a Efeta?</label>
                                 <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $dados['motivo'] ?? '-' }}</p>
-                            </div>
-                            
-
+                            </div>                           
                         </div>
                     </div>
                 </div>
                  @endif
-
-
-
 
 
                 @if ($dados['is_problema_saude'])
@@ -367,7 +367,7 @@ $idade = computed(function () {
                     </div>
                 </div>
 
-                @if ($dados['gostaria_de_trabalhar'])
+                @if ($dados['gostaria_de_trabalhar'] && auth()->user()->role_id != 3)
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
                    <div class="bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 rounded-lg shadow-sm px-6 py-4">
                        <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center">

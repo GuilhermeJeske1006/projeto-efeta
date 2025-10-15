@@ -17,6 +17,7 @@ state([
     'estado_civil' => null,
     'telefone' => null,
     'nome' => null,
+    'cpf' => null,
 
 ]);
 
@@ -44,7 +45,10 @@ $getPessoas = function () {
         ->when($this->nome, function ($query) {
             return $query->where('pessoas.nome', 'like', '%' . $this->nome . '%');
         })
-        ->orderBy('pessoas.nome')
+        ->when($this->cpf, function ($query) {
+            return $query->where('pessoas.cpf', 'like', '%' . $this->cpf . '%');
+        })
+        ->orderBy('pessoas.updated_at', 'desc')
         ->paginate($this->perPage);
 
     return $result;
@@ -139,6 +143,17 @@ $delete = function ($id) {
                         </flux:select.option>
                     @endforeach
                 </flux:select>
+            </div>
+
+            <div class="space-y-2">
+                <label for="cpf" class="block text-sm font-medium whitespace-nowrap">CPF</label>
+                <input 
+                    wire:model.live.debounce.300ms="cpf" 
+                    type="text" 
+                    id="cpf"
+                    placeholder="000.000.000-00" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                >
             </div>
         </div>
     
