@@ -13,13 +13,13 @@ class SpreadsheetController extends Controller
     public function upload(Request $request)
     {
         try {
-            Log::info('Recebendo requisição para upload', ['request' => $request->all()]);
+            // Log::info('Recebendo requisição para upload', ['request' => $request->all()]);
 
             $request->validate([
                 'file' => 'required|file|mimes:xlsx,csv',
             ]);
 
-            Log::info('Arquivo recebido com sucesso', ['file' => $request->file('file')->getClientOriginalName()]);
+            // Log::info('Arquivo recebido com sucesso', ['file' => $request->file('file')->getClientOriginalName()]);
 
             Excel::import(new SpreadsheetImport, $request->file('file'));
 

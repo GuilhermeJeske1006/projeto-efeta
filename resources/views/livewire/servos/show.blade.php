@@ -106,6 +106,7 @@ $dataFormatada = computed(function () {
     return '';
 });
 
+
 // Computed para calcular idade
 $idade = computed(function () {
     if ($this->dados['data_nascimento']) {
