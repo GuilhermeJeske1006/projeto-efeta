@@ -5,4 +5,3 @@ set -e;
 
 php artisan storage:link;
 php artisan optimize;
-php artisan horizon:terminate;
