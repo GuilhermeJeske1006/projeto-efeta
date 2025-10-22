@@ -1,13 +1,10 @@
 #!/bin/bash
 set -e
 
-# Alias composer2 para o composer real
-alias composer2="/usr/bin/composer"
-
 APP_ENV=$(grep APP_ENV .env | cut -d '=' -f 2);
 
 echo "Running composer install from ${APPLICATION_ROOT}";
-composer2 install --no-ansi --no-progress --no-interaction --no-dev
+/usr/bin/composer install --no-ansi --no-progress --no-interaction --no-dev
 
 echo "Running migrations for ${APP_ENV} environment";
 php artisan migrate --force
