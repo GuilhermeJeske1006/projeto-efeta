@@ -1,12 +1,6 @@
 #!/bin/bash
 set -e
 
-# Forçar Node v20
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-nvm install 20
-nvm use 20
-
 echo "Node version: $(node -v)"
 
 APP_ENV=$(grep APP_ENV .env | cut -d '=' -f2)
