@@ -8,6 +8,14 @@ APP_ENV=$(grep APP_ENV .env | cut -d '=' -f2)
 echo "Running composer install";
 composer --no-ansi --no-interaction --optimize-autoloader --no-progress --profile --no-cache install
 
+# Instalar dependências do Node.js
+echo "Running npm install";
+npm install
+
+# Rodar o build
+echo "Running npm run build";
+npm run build
+
 echo "Running migrations for ${APP_ENV} environment";
 php artisan migrate --force
 
