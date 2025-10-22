@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 <link rel="manifest" href="/site.webmanifest" />
 
-<meta name="description" content="{{ 'Sistema EFETA - Controle detodo o retiro do EFETA Guabiruba' }}" />
+<meta name="description" content="{{ 'Sistema EFETA - Controle de todo o retiro do EFETA Guabiruba' }}" />
 
 <meta name="author" content="Guilherme Jeske" />
 <meta name="theme-color" content="#ffffff" />

@@ -17,7 +17,7 @@ echo "Running npm run build";
 npm run build
 
 echo "Running migrations for ${APP_ENV} environment";
-php artisan migrate --seed --force
+php artisan migrate --force
 
 echo "Clearing caches";
 php artisan config:cache
