@@ -11,7 +11,7 @@ composer --no-ansi --no-interaction --optimize-autoloader --no-progress --profil
 echo "Running migrations for ${APP_ENV} environment";
 php artisan migrate --force
 
-echo "Running NPM";
-rm -rf node_modules package-lock.json
-npm install --no-audit --no-optional --no-progress
-npm run build
+echo "Clearing caches";
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
