@@ -3,9 +3,11 @@ set -e
 
 APP_ENV=$(cat .env | grep APP_ENV | cut -d '=' -f 2);
 
+# Alias para composer2 apontando para o composer real
+alias composer2="/usr/bin/composer"
+
 echo "Running composer install from ${APPLICATION_ROOT}";
-# Usando caminho completo do composer
-/usr/bin/composer install --no-ansi --no-progress --no-interaction --no-dev
+composer2 install --no-ansi --no-progress --no-interaction --no-dev
 
 echo "Running migrations for ${APP_ENV} environment";
 php artisan migrate --force
