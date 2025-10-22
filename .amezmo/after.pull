@@ -1,34 +1,17 @@
 #!/bin/bash
 set -e
 
-# -------------------------------
-# Configurações de ambiente
-# -------------------------------
 APP_ENV=$(grep APP_ENV .env | cut -d '=' -f2)
-NODE_VERSION=20
 
-echo "✅ Garantindo Node.js v${NODE_VERSION}..."
-# Se estiver usando nvm
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+echo "✅ Node version: $(node -v)"
+echo "✅ NPM version: $(npm -v)"
 
-nvm install ${NODE_VERSION}
-nvm use ${NODE_VERSION}
-echo "Node.js version: $(node -v)"
-echo "NPM version: $(npm -v)"
-
-# -------------------------------
-# Composer
-# -------------------------------
 echo "📦 Rodando composer install..."
 composer --no-ansi --no-interaction --optimize-autoloader --no-progress --profile --no-cache install
 
 echo "🚀 Rodando migrations para o ambiente ${APP_ENV}..."
 php artisan migrate --force
 
-# -------------------------------
-# Node / NPM
-# -------------------------------
 echo "🧹 Limpando node_modules e package-lock.json..."
 rm -rf node_modules package-lock.json
 
