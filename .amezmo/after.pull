@@ -1,23 +1,41 @@
 #!/bin/bash
 set -e
 
+# -------------------------------
+# Configurações de ambiente
+# -------------------------------
 APP_ENV=$(grep APP_ENV .env | cut -d '=' -f2)
+NODE_VERSION=20
 
-echo "Running composer install";
+echo "✅ Garantindo Node.js v${NODE_VERSION}..."
+# Se estiver usando nvm
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+nvm install ${NODE_VERSION}
+nvm use ${NODE_VERSION}
+echo "Node.js version: $(node -v)"
+echo "NPM version: $(npm -v)"
+
+# -------------------------------
+# Composer
+# -------------------------------
+echo "📦 Rodando composer install..."
 composer --no-ansi --no-interaction --optimize-autoloader --no-progress --profile --no-cache install
 
-echo "Running migrations for ${APP_ENV} environment";
+echo "🚀 Rodando migrations para o ambiente ${APP_ENV}..."
 php artisan migrate --force
 
-echo "Cleaning old Node modules and lockfile";
+# -------------------------------
+# Node / NPM
+# -------------------------------
+echo "🧹 Limpando node_modules e package-lock.json..."
 rm -rf node_modules package-lock.json
-npm cache clean --force
 
-echo "Installing NPM dependencies without optional packages";
-npm install --no-audit --omit=optional --no-progress
+echo "📥 Instalando dependências NPM sem pacotes opcionais..."
+npm install --no-audit --no-optional --no-progress
 
-echo "Disabling Rollup native modules to avoid MODULE_NOT_FOUND";
-export ROLLUP_DISABLE_NATIVE=true
-
-echo "Running NPM build";
+echo "🏗️ Rodando build Vite..."
 npm run build
+
+echo "✅ Deploy concluído!"
