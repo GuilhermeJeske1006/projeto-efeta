@@ -6,19 +6,19 @@ APP_ENV=$(grep APP_ENV .env | cut -d '=' -f2)
 echo "✅ Node version: $(node -v)"
 echo "✅ NPM version: $(npm -v)"
 
-echo "📦 Rodando composer install..."
+echo "📦 Composer install..."
 composer --no-ansi --no-interaction --optimize-autoloader --no-progress --profile --no-cache install
 
-echo "🚀 Rodando migrations para o ambiente ${APP_ENV}..."
+echo "🚀 Migrations ${APP_ENV}..."
 php artisan migrate --force
 
-echo "🧹 Limpando node_modules e package-lock.json..."
+echo "🧹 Cleaning node_modules and lockfile..."
 rm -rf node_modules package-lock.json
 
-echo "📥 Instalando dependências NPM sem pacotes opcionais..."
+echo "📥 Installing NPM dependencies..."
 npm install --no-audit --no-optional --no-progress
 
-echo "🏗️ Rodando build Vite..."
+echo "🏗️ Building Vite..."
 npm run build
 
 echo "✅ Deploy concluído!"
