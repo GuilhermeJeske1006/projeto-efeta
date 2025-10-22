@@ -9,6 +9,15 @@ composer --no-ansi --no-interaction --optimize-autoloader --no-progress --profil
 echo "Running migrations for ${APP_ENV} environment";
 php artisan migrate --force
 
-echo "Running NPM";
-npm install --no-audit --no-optional --no-progress
+echo "Cleaning old Node modules and lockfile";
+rm -rf node_modules package-lock.json
+npm cache clean --force
+
+echo "Installing NPM dependencies without optional packages";
+npm install --no-audit --omit=optional --no-progress
+
+echo "Disabling Rollup native modules to avoid MODULE_NOT_FOUND";
+export ROLLUP_DISABLE_NATIVE=true
+
+echo "Running NPM build";
 npm run build
