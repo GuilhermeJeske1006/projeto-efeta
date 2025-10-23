@@ -30,7 +30,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
     public $religiao = 'Católica';
     public $sacramento = 'Batismo, Eucaristia';
     public $comunidade = '';
-    public $ja_fez_retiro = false;
+    public $ja_fez_retiro = 0;
 
     // RESPONSÁVEIS ADICIONAIS
     public $responsaveis = [['nome_pessoa' => '', 'numero' => '']];
@@ -92,7 +92,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
             'religiao' => ['required', 'string', 'max:100'],
             'sacramento' => ['nullable', 'string', 'max:255'],
             'comunidade' => ['nullable', 'string', 'max:255'],
-            'ja_fez_retiro' => ['required', 'boolean'],
+            'ja_fez_retiro' => ['required'],
 
             // Endereço
             'cep' => ['required', 'string', 'max:9', 'min:8'],
@@ -866,8 +866,8 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
 
                 <div class="flex flex-col gap-2">
                     <flux:radio.group wire:model="ja_fez_retiro" >
-                        <flux:radio value="true" label="Sim" />
-                        <flux:radio value="false" label="Não" />
+                        <flux:radio value="1" label="Sim" />
+                        <flux:radio value="0" label="Não" />
                     </flux:radio.group>
                 </div>
             </div>
