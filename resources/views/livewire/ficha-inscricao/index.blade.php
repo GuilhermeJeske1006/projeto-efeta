@@ -30,6 +30,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
     public $religiao = 'Católica';
     public $sacramento = 'Batismo, Eucaristia';
     public $comunidade = '';
+    public $ja_fez_retiro = false;
 
     // RESPONSÁVEIS ADICIONAIS
     public $responsaveis = [['nome_pessoa' => '', 'numero' => '']];
@@ -59,7 +60,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
     public $aceita_comunicacao = false;
 
     // ARRAYS DE OPÇÕES
-    public $generos = ['Masculino', 'Feminino', 'Outro', 'Prefiro não informar'];
+    public $generos = ['Masculino', 'Feminino'];
     public $estados_civis = ['Solteiro(a)', 'Casado(a)', 'Divorciado(a)', 'Viúvo(a)', 'União Estável'];
     public $estados = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
     public $parentescos = ['Pai', 'Mãe', 'Avô', 'Avó', 'Tio', 'Tia', 'Irmão', 'Irmã', 'Outro'];
@@ -91,6 +92,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
             'religiao' => ['required', 'string', 'max:100'],
             'sacramento' => ['nullable', 'string', 'max:255'],
             'comunidade' => ['nullable', 'string', 'max:255'],
+            'ja_fez_retiro' => ['required', 'boolean'],
 
             // Endereço
             'cep' => ['required', 'string', 'max:9', 'min:8'],
@@ -135,6 +137,8 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
             'genero.required' => 'Selecione um gênero',
             'estado_civil.required' => 'Selecione um estado civil',
             'religiao.required' => 'A religião é obrigatória',
+            'ja_fez_retiro.required' => 'Informe se já fez algum retiro',
+            'ja_fez_retiro.boolean' => 'Valor inválido para já fez retiro',
 
             // Responsável
             'nome_responsavel.required_if' => 'O nome do responsável é obrigatório para menores de idade',
@@ -395,6 +399,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
                 'religiao' => $this->religiao,
                 'sacramento' => $this->sacramento,
                 'comunidade' => $this->comunidade,
+                'ja_fez_retiro' => $this->ja_fez_retiro,
 
                 // Responsáveis adicionais
                 'responsaveis' => $this->responsaveis,
@@ -464,6 +469,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
             'religiao' => $dados['religiao'],
             'sacramento' => $dados['sacramento'],
             'comunidade' => $dados['comunidade'],
+            'ja_fez_retiro' => $dados['ja_fez_retiro']
         ]);
 
         // Save address if provided
@@ -527,6 +533,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
             'religiao' => $dados['religiao'] ?: null,
             'sacramento' => $dados['sacramento'] ?: null,
             'comunidade' => $dados['comunidade'] ?: null,
+            'ja_fez_retiro' => $dados['ja_fez_retiro']
         ]);
 
         // Atualizar ou criar endereço
@@ -854,6 +861,16 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
                 </div>
             </div>
 
+            <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Já fez algum retiro?</h2>
+
+                <div class="flex flex-col gap-2">
+                    <flux:radio.group wire:model="ja_fez_retiro" >
+                        <flux:radio value="true" label="Sim" />
+                        <flux:radio value="false" label="Não" />
+                    </flux:radio.group>
+                </div>
+            </div>
 
             <!-- INFORMAÇÕES DE SAÚDE E EMERGÊNCIA -->
             <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
@@ -893,6 +910,8 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
                 <flux:textarea wire:model="motivo" :label="__('Descreva o motivo pelo qual deseja fazer o efeta')"
                     rows="4" placeholder="" />
             </div>
+
+
 
             <!-- TERMOS E CONDIÇÕES -->
             <div class="pb-6">

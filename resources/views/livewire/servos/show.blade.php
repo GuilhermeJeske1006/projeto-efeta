@@ -67,6 +67,7 @@ $carregarDadosPessoa = function () {
         $this->dados['comunidade'] = $this->pessoa->comunidade ?? '';
         $this->dados['gostaria_de_trabalhar'] = $this->pessoa->gostaria_de_trabalhar ?? '';
         $this->dados['trabalha_onde_comunidade'] = $this->pessoa->trabalha_onde_comunidade ?? '';
+        $this->dados['ja_fez_retiro'] = $this->pessoa->ja_fez_retiro;
 
         // Carregar dados do endereço (primeiro endereço se existir)
         $this->dados['logradouro'] = $this->pessoa->logradouro ?? '';
@@ -95,7 +96,11 @@ $carregarDadosPessoa = function () {
 };
 
 $voltar = function () {
-    return redirect()->route('servos.index');
+    if($this->dados['tipo_pessoa_id'] == 1) {
+        return redirect()->route('servos.index');
+    } else {
+        return redirect()->route('retirantes.index');
+    }
 };
 
 // Computed para formatar data
@@ -202,6 +207,15 @@ $idade = computed(function () {
                                 <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">O que faz na comunidade</label>
                                 <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $dados['trabalha_onde_comunidade'] ?? '-' }}</p>
                             </div>
+                         
+           
+                            @if ($dados['ja_fez_retiro'] != '')
+                                <div class="space-y-1">
+                                    <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Já  fez algum retiro?</label>
+                                    <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $dados['ja_fez_retiro'] == 1 ? 'Sim' : 'Não' }}</p>
+                                </div>
+                            @endif
+                           
                         </div>
                     </div>
                 </div>

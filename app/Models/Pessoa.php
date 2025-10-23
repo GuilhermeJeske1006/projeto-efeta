@@ -27,11 +27,13 @@ class Pessoa extends Model
         'religiao',
         'gostaria_de_trabalhar',
         'trabalha_onde_comunidade',
+        'ja_fez_retiro',
     ];
 
     protected $casts = [
         'is_problema_saude' => 'boolean',
         'ja_trabalhou'      => 'boolean',
+        'ja_fez_retiro'     => 'boolean',
     ];
 
     public function telefones()

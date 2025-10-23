@@ -60,7 +60,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
     public $aceita_comunicacao = false;
 
     // ARRAYS DE OPÇÕES
-    public $generos = ['Masculino', 'Feminino', 'Outro', 'Prefiro não informar'];
+    public $generos = ['Masculino', 'Feminino'];
     public $estados_civis = ['Solteiro(a)', 'Casado(a)', 'Divorciado(a)', 'Viúvo(a)', 'União Estável'];
     public $estados = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
     public $parentescos = ['Pai', 'Mãe', 'Avô', 'Avó', 'Tio', 'Tia', 'Irmão', 'Irmã', 'Outro'];
