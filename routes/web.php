@@ -56,6 +56,7 @@ Route::middleware(['auth'])->group(function () {
 
 Volt::route('ficha-inscricao', 'ficha-inscricao.index')->name('ficha-inscricao.index');
 Volt::route('ficha-equipe', 'ficha-equipe.index')->name('ficha-equipe.index');
+Volt::route('tela-sucesso', 'tela-sucesso.index')->name('tela-sucesso.index');
 
 
 require __DIR__ . '/auth.php';

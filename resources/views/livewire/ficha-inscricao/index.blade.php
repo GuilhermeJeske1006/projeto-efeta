@@ -93,7 +93,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
             'comunidade' => ['nullable', 'string', 'max:255'],
 
             // Endereço
-            'cep' => ['required', 'string', 'size:9'],
+            'cep' => ['required', 'string', 'max:9', 'min:8'],
             'logradouro' => ['required', 'string', 'max:255'],
             'numero' => ['required', 'string', 'max:20'],
             'complemento' => ['nullable', 'string', 'max:100'],
@@ -144,7 +144,8 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
 
             // Endereço
             'cep.required' => 'O CEP é obrigatório',
-            'cep.size' => 'O CEP deve ter 9 caracteres (00000-000)',
+            'cep.min' => 'O CEP deve ter pelo menos 8 caracteres',
+            'cep.max' => 'O CEP deve ter no máximo 9 caracteres',
             'logradouro.required' => 'O logradouro é obrigatório',
             'numero.required' => 'O número é obrigatório',
             'bairro.required' => 'O bairro é obrigatório',
@@ -431,7 +432,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
                 $this->save($dados);
             }
 
-            $this->showNotification('success', 'Inscrição realizada com sucesso!');
+            return redirect('tela-sucesso');
 
             // Opcionalmente, redirecionar ou limpar formulário
             $this->reset();
@@ -812,7 +813,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
                         <div class="flex flex-col md:flex-row md:space-x-2 space-y-2 md:space-y-0">
                             <div class="flex-grow">
                                 <flux:input wire:model="cep" :label="__('CEP')" type="text"
-                                    placeholder="00000-000"  />
+                                    placeholder="00000-000"  wire:change="formatarCep"  />
                             </div>
                             <div class="flex items-end">
                                 <flux:button type="button" wire:click="buscarCep" size="sm">

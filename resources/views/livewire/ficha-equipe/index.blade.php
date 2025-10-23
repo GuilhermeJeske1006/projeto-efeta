@@ -328,7 +328,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
             // Log de inscrição
             \Log::channel('equipeCadatrada')->info('Nova inscrição na equipe de trabalho', ['cpf' => $dados['cpf'], 'email' => $dados['email'], 'nome' => $dados['nome'], 'data_cadastro' => now()]);
 
-            $this->showNotification('success', 'Inscrição realizada com sucesso!');
+            return redirect('tela-sucesso');
 
             // Opcionalmente, redirecionar ou limpar formulário
             $this->reset();
@@ -632,7 +632,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
                         <div class="flex flex-col md:flex-row md:space-x-2 space-y-2 md:space-y-0">
                             <div class="flex-grow">
                                 <flux:input wire:model="cep" :label="__('CEP')" type="text"
-                                    placeholder="00000-000" />
+                                    placeholder="00000-000" wire:change="formatarCep" />
                             </div>
                             <div class="flex items-end">
                                 <flux:button type="button" wire:click="buscarCep" size="sm">
