@@ -31,6 +31,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
     public $sacramento = 'Batismo, Eucaristia';
     public $comunidade = '';
     public $ja_fez_retiro = 0;
+    public $trabalha_onde_comunidade = '';
 
     // RESPONSÁVEIS ADICIONAIS
     public $responsaveis = [['nome_pessoa' => '', 'numero' => '']];
@@ -400,6 +401,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
                 'sacramento' => $this->sacramento,
                 'comunidade' => $this->comunidade,
                 'ja_fez_retiro' => $this->ja_fez_retiro,
+                'trabalha_onde_comunidade' => $this->trabalha_onde_comunidade,
 
                 // Responsáveis adicionais
                 'responsaveis' => $this->responsaveis,
@@ -469,7 +471,8 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
             'religiao' => $dados['religiao'],
             'sacramento' => $dados['sacramento'],
             'comunidade' => $dados['comunidade'],
-            'ja_fez_retiro' => $dados['ja_fez_retiro']
+            'ja_fez_retiro' => $dados['ja_fez_retiro'],
+            'trabalha_onde_comunidade' => $dados['trabalha_onde_comunidade']
         ]);
 
         // Save address if provided
@@ -533,7 +536,8 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
             'religiao' => $dados['religiao'] ?: null,
             'sacramento' => $dados['sacramento'] ?: null,
             'comunidade' => $dados['comunidade'] ?: null,
-            'ja_fez_retiro' => $dados['ja_fez_retiro']
+            'ja_fez_retiro' => $dados['ja_fez_retiro'],
+            'trabalha_onde_comunidade' => $dados['trabalha_onde_comunidade'],
         ]);
 
         // Atualizar ou criar endereço
@@ -758,8 +762,23 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
                         <flux:input wire:model="comunidade" :label="__('Comunidade que frequênta')" type="text"
                              />
                     </div>
+                    
+                </div>
+                <div class="pt-6">
+    
+                    <div class="space-y-4">
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-1">
+                                <div>
+                                    <flux:textarea wire:model="trabalha_onde_comunidade"
+                                        :label="__('Informe se você exerce algum trabalho na sua comunidade, como por exemplo: (Musica, Litirgia, Pascom)')" rows="4" />
+                                </div>
+    
+                            </div>
+                    </div>
                 </div>
             </div>
+
+          
 
 
             <!-- CONTATO -->
