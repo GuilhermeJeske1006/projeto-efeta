@@ -19,7 +19,7 @@ state([
     'nome' => null,
     'cpf' => null,
     'confirmingDelete' => null,
-
+    'orderBy' => 'created_at',
 ]);
 
 // Define the pessoas getter method
@@ -48,6 +48,12 @@ $getPessoas = function () {
         })
         ->when($this->cpf, function ($query) {
             return $query->where('pessoas.cpf', 'like', '%' . $this->cpf . '%');
+        })
+        ->when($this->orderBy, function ($query) {
+            if ($this->orderBy === 'idade') {
+                return $query->orderByRaw('TIMESTAMPDIFF(YEAR, pessoas.data_nascimento, CURDATE())');
+            }
+            return $query->orderBy($this->orderBy, 'desc');
         })
         ->orderBy('pessoas.updated_at', 'desc')
         ->paginate($this->perPage);
@@ -158,11 +164,30 @@ $delete = function ($id) {
                     class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                 >
             </div>
+
+            <div class="space-y-2">
+
+            </div>
         </div>
     
         <!-- Botões de Ação -->
         <div class="mt-4 flex justify-end space-x-3">
      
+        </div>
+    </div>
+    <div class="flex items-center justify-between mb-4" style="align-items: flex-end;">
+        <div>
+            <span class="text-xl font-bold tracking-wider text-gray-500 dark:text-white">
+                Total: {{ $this->getPessoas()->total() }}
+            </span>
+        </div>
+        <div class="space-y-2">
+            <label for="orderBy" class="block text-sm font-medium whitespace-nowrap">Ordenar por</label>
+            <flux:select wire:model.live.debounce.300ms="orderBy" id="orderBy" class="w-full">
+                <flux:select.option value="created_at">Data de Criação</flux:select.option>
+                <flux:select.option value="updated_at">Data de Atualização</flux:select.option>
+                <flux:select.option value="idade">Idade</flux:select.option>
+            </flux:select>
         </div>
     </div>
 

@@ -21,6 +21,7 @@ state([
     'nome' => null,
     'cpf' => null,
     'confirmingDelete' => null,
+    'orderBy' => 'created_at', // Adiciona o estado para ordenação
 ]);
 
 // Define the pessoas getter method
@@ -54,9 +55,15 @@ $getPessoas = function () {
         ->when($this->nome, function ($query) {
             return $query->where('pessoas.nome', 'like', '%' . $this->nome . '%');
         })
-        ->orderBy('pessoas.data_nascimento', 'asc')
+        ->orderBy(
+            match ($this->orderBy) {
+                'idade' => 'pessoas.data_nascimento',
+                'updated_at' => 'pessoas.updated_at',
+                default => 'pessoas.created_at',
+            },
+            'asc'
+        )
         ->paginate($this->perPage);
-
 
     return $result;
 };
@@ -154,6 +161,7 @@ $delete = function ($id) {
                     class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                 >
             </div>
+           
         </div>
 
         <!-- Botões de Ação -->
@@ -161,6 +169,23 @@ $delete = function ($id) {
 
         </div>
     </div>
+
+    <div class="flex items-center justify-between mb-4" style="align-items: flex-end;">
+        <div>
+            <span class="text-xl font-bold tracking-wider text-gray-500 dark:text-white">
+                Total: {{ $this->getPessoas()->total() }}
+            </span>
+        </div>
+        <div class="space-y-2">
+            <label for="orderBy" class="block text-sm font-medium whitespace-nowrap">Ordenar por</label>
+            <flux:select wire:model.live.debounce.300ms="orderBy" id="orderBy" class="w-full">
+                <flux:select.option value="created_at">Data de Criação</flux:select.option>
+                <flux:select.option value="updated_at">Data de Atualização</flux:select.option>
+                <flux:select.option value="idade">Idade</flux:select.option>
+            </flux:select>
+        </div>
+    </div>
+
 
     <!-- Flash message -->
     @if (session()->has('message'))
@@ -178,7 +203,7 @@ $delete = function ($id) {
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefone
                         Principal</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gênero
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase  ">Gênero
                     </th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data
                         nascimento</th>
