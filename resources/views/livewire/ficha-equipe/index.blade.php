@@ -598,7 +598,7 @@ new #[Layout('components.layouts.auth-ficha')] class extends Component {
                             <div class="grid grid-cols-1 gap-4 md:grid-cols-1">
                                 <div>
                                     <flux:textarea wire:model="trabalha_onde_comunidade"
-                                        :label="__('Informe se você exerce algum trabalho na sua comunidade, como por exemplo: (Musica, Litirgia, Pascom)')" rows="4" />
+                                        :label="__('Informe se você exerce algum trabalho na sua comunidade, como por exemplo: (Música, Liturgia, Pascom)')" rows="4" />
                                 </div>
     
                             </div>
