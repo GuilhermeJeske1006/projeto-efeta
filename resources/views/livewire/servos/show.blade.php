@@ -46,6 +46,7 @@ $carregarDadosPessoa = function () {
                 ->select('pessoas.*', 'enderecos.*')
                 ->limit(1)
                 ->first();
+
                 
         $this->telefones = DB::table('telefones')->where('pessoa_id', $this->pessoaId)->get()->toArray();
 
@@ -164,7 +165,7 @@ $idade = computed(function () {
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Data do cadastro</label>
-                                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $dataCriacaoFormatada ?? '-' }}</p>
+                                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $this->dataCriacaoFormatada ?? '-' }}</p>
                             </div>
                             
                             <div class="space-y-1">
