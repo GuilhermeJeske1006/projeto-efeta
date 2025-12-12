@@ -28,6 +28,7 @@ class Pessoa extends Model
         'gostaria_de_trabalhar',
         'trabalha_onde_comunidade',
         'ja_fez_retiro',
+        'created_at',
     ];
 
     protected $casts = [

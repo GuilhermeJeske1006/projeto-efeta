@@ -54,6 +54,7 @@ $carregarDadosPessoa = function () {
         $this->dados['nome'] = $this->pessoa->nome;
         $this->dados['cpf'] = $this->pessoa->cpf;
         $this->dados['data_nascimento'] = $this->pessoa->data_nascimento;
+        $this->dados['created_at'] = $this->pessoa->created_at;
         $this->dados['email'] = $this->pessoa->email ?? '';
         $this->dados['tipo_pessoa_id'] = $this->pessoa->tipo_pessoa_id;
         $this->dados['is_problema_saude'] = $this->pessoa->is_problema_saude;
@@ -111,6 +112,12 @@ $dataFormatada = computed(function () {
     return '';
 });
 
+$dataCriacaoFormatada = computed(function () {
+    if ($this->dados['created_at']) {
+        return \Carbon\Carbon::parse($this->dados['created_at'])->format('d/m/Y');
+    }
+    return '';
+});
 
 // Computed para calcular idade
 $idade = computed(function () {
@@ -155,6 +162,11 @@ $idade = computed(function () {
                     
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Data do cadastro</label>
+                                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $dataCriacaoFormatada ?? '-' }}</p>
+                            </div>
+                            
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nome Completo</label>
                                 <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $dados['nome'] ?? '-' }}</p>
