@@ -122,6 +122,10 @@ $delete = function ($id) {
                                 <flux:icon.trash/>   
 
                             </button>
+                            @elseif (auth()->user()->role_id === 2)
+                                <a href="{{ route('retirantes-retiros.index', $retiro->id) }}" class="text-blue-600 hover:text-blue-900 mr-3" title="Ver Retirantes">
+                                    <flux:icon.user-group/>   
+                                </a>
                             @endif
                         </td>
                     </tr>
