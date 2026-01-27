@@ -88,17 +88,24 @@ $getServos = function () {
             $pessoas = \App\Models\PessoaRetiro::query()
                 ->where('equipe_id', $equipeId)
                 ->where('retiro_id', $retiroId)
-                ->join('pessoas', 'pessoa_retiros.pessoa_id', '=', 'pessoas.id')
-                ->leftJoin('telefones', function ($join) {
-                    $join->on('telefones.pessoa_id', '=', 'pessoas.id')
-                         ->where('telefones.is_principal', true);
-                })
+                ->with(['pessoa' => function ($query) {
+                    $query->with('telefones');
+                }])
                 ->when($searchTerm, function ($q) use ($searchTerm) {
-                    $q->where('pessoas.nome', 'like', '%' . $searchTerm . '%');
+                    $q->whereHas('pessoa', function ($query) use ($searchTerm) {
+                        $query->where('nome', 'like', '%' . $searchTerm . '%');
+                    });
                 })
-                ->select('pessoa_retiros.*', 'pessoas.nome', 'pessoas.id', 'telefones.numero as telefone')
                 ->orderByDesc('is_coordenador')
                 ->paginate($this->perPage, ['*'], 'page_' . $equipeId . '_' . $retiroId);
+
+            // Transformar para manter compatibilidade com a estrutura anterior
+            $pessoas->getCollection()->transform(function ($pessoaRetiro) {
+                $pessoaRetiro->nome = $pessoaRetiro->pessoa->nome ?? null;
+                $pessoaRetiro->id = $pessoaRetiro->pessoa->id ?? null;
+                $pessoaRetiro->telefones = $pessoaRetiro->pessoa->telefones->pluck('numero')->toArray() ?? [];
+                return $pessoaRetiro;
+            });
 
             $result[] = [
                 'equipe' => $equipe,
@@ -182,7 +189,42 @@ $fecharModal = function () {
     $this->selectedPessoaId = null;
     $this->selectedRetiroId = null;
 };
+
+$exportarTodosCSV = function () {
+    try {
+        $userId = auth()->user()->id;
+
+        $fileName = 'todos_servos_' . date('Ymd_His') . '.csv';
+
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\TodosServosExport($userId), $fileName);
+    } catch (\Exception $e) {
+        $this->showNotification('error', 'Erro ao exportar CSV: ' . $e->getMessage());
+    }
+};
+
+$exportarCSV = function ($equipeId, $retiroId) {
+    try {
+        $userId = auth()->user()->id;
+
+        $permissao = PermissaoUsuarioRetiro::where('user_id', $userId)
+            ->where('equipe_id', $equipeId)
+            ->where('retiro_id', $retiroId)
+            ->first();
+
+        if (!$permissao) {
+            throw new \Exception('Você não tem permissão para exportar esta equipe.');
+        }
+
+        $fileName = 'servos_equipe_' . $equipeId . '_retiro_' . $retiroId . '_' . date('Ymd_His') . '.csv';
+
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\ServosExport($equipeId, $retiroId), $fileName);
+    } catch (\Exception $e) {
+        $this->showNotification('error', 'Erro ao exportar CSV: ' . $e->getMessage());
+    }
+};
 ?>
+
+
 
 <div>
     <livewire:components.notification :notification="$notification" />
@@ -239,6 +281,18 @@ $fecharModal = function () {
  
     @endif
 
+
+    <div class="mb-6">
+        <div class="flex justify-end">
+        <button
+            class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400"
+            wire:click="exportarTodosCSV"
+        >
+            Exportar Todos CSV
+        </button>
+        </div>
+    </div>
+
     @foreach ($this->getServos() as $item)
     <div class="mb-8">
 
@@ -271,6 +325,17 @@ $fecharModal = function () {
             </div>
         </div>
 
+        <div class="w-full p-2 mb-3">
+            <div class="flex justify-start">
+            <button 
+                class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                wire:click="exportarCSV({{ $item['equipe']->id }}, {{ $item['retiro']->id }})"
+            >
+                Exportar CSV
+            </button>
+            </div>
+        </div>
+
         <div class="overflow-x-auto border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800 rounded-lg shadow-sm">
             <table class="min-w-full border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
                 <thead class="bg-gray-100">
@@ -292,7 +357,16 @@ $fecharModal = function () {
                                     </span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa['telefone'] ?? 'N/A' }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if(!empty($pessoa['telefones']))
+                                    {{ $pessoa['telefones'][0] }} <span class="text-sm text-gray-500">(Principal)</span>
+                                    @if(count($pessoa['telefones']) > 1)
+                                        / {{ implode(' / ', array_slice($pessoa['telefones'], 1)) }}
+                                    @endif
+                                @else
+                                    -
+                                @endif
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <select 
                                     class="border w-full rounded px-2 py-1 md:px-2 md:py-1 text-base md:text-sm"

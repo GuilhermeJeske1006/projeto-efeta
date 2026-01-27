@@ -27,11 +27,7 @@ state([
 // Define the pessoas getter method
 $getPessoas = function () {
     $result = Pessoa::query()
-        ->leftJoin('telefones', function ($join) {
-            $join->on('telefones.pessoa_id', '=', 'pessoas.id')->where('telefones.is_principal', true);
-        })
         ->where('pessoas.tipo_pessoa_id', 3)
-        ->select('pessoas.*', 'telefones.numero as telefone_principal')
         ->when($this->data_nascimento_minima && $this->data_nascimento_maxima, function ($query) {
             return $query->whereBetween('pessoas.data_nascimento', [$this->data_nascimento_minima, $this->data_nascimento_maxima]);
         })
@@ -65,6 +61,12 @@ $getPessoas = function () {
         )
         ->paginate($this->perPage);
 
+    // // Map the result to include an array of telefones
+    $result->getCollection()->transform(function ($pessoa) {
+        $pessoa->telefones = $pessoa->telefones->pluck('numero')->toArray();
+        return $pessoa;
+    });
+
     return $result;
 };
 
@@ -76,6 +78,34 @@ $delete = function ($id) {
         session()->flash('message', 'Retirante excluída com sucesso!');
     }
     $this->confirmingDelete = null;
+};
+
+$addChamamento = function ($pessoa) {
+    $retiroProximo = \App\Models\Retiro::where('data_inicio', '>', now())->orderBy('data_inicio', 'asc')->first();
+    if ($retiroProximo) {
+        $exists = \DB::table('pessoa_retiros')
+            ->where('retiro_id', $retiroProximo->id)
+            ->where('equipe_id', 14)
+            ->where('pessoa_id', $pessoa['id'])
+            ->exists();
+        
+        if (!$exists) {
+            \DB::table('pessoa_retiros')->insert([
+                'retiro_id' => $retiroProximo->id,
+                'pessoa_id' => $pessoa['id'],
+                'equipe_id' => 14,
+                'is_coordenador' => false,
+                'status_id' => 1, // Não chamado
+                'tipo_id' => 3,
+            ]);
+            session()->flash('message', $pessoa['nome'] . 'Adicionado ao chamamento com sucesso!');
+
+        } else {
+            session()->flash('message', 'Este retirante já está no chamamento do próximo retiro.');
+        }
+    } else {
+        session()->flash('message', 'Nenhum retiro futuro encontrado para adicionar o chamamento.');
+    }
 };
 
 ?>
@@ -201,8 +231,7 @@ $delete = function ($id) {
             <thead class="bg-gray-100">
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefone
-                        Principal</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefones</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase  ">Gênero
                     </th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data
@@ -214,13 +243,28 @@ $delete = function ($id) {
             </thead>
             <tbody class="divide-y divide-gray-200">
                 @foreach ($this->getPessoas() as $pessoa)
+               
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->nome }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->telefone_principal ?? 'Sem telefone' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @if(!empty($pessoa->telefones))
+                            {{ $pessoa->telefones[0] }} <span class="text-sm text-gray-500">(Principal)</span>
+                            @if(count($pessoa->telefones) > 1)
+                                / {{ implode(' / ', array_slice($pessoa->telefones, 1)) }}
+                            @endif
+                        @else
+                            -
+                        @endif
+
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->genero }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ \Carbon\Carbon::parse($pessoa->data_nascimento)->format('d/m/Y') }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->cpf }}</td>
                         <td class="px-6 py-4 whitespace-nowrap flex items-center">
+                            
+                            <button wire:click="addChamamento({{ $pessoa }})" class=" mr-3">
+                                <flux:icon.arrow-up-left/>
+                            </button>
                             <a href="{{ route('servos.show', $pessoa) }}"
                                 class="text-blue-600 hover:text-blue-900 mr-3">
                                 <flux:icon.eye />
