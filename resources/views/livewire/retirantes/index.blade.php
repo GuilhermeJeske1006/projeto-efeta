@@ -3,9 +3,9 @@
 use App\Models\Pessoa;
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
-use function Livewire\Volt\{state, computed};
+use function Livewire\Volt\{state, computed, uses};
 
-with(WithPagination::class);
+uses([WithPagination::class]);
 
 // Define state properties
 state([
