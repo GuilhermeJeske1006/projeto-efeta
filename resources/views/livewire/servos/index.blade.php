@@ -3,9 +3,9 @@
 use App\Models\Pessoa;
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
-use function Livewire\Volt\{state, computed};
+use function Livewire\Volt\{state, computed, uses};
 
-with(WithPagination::class);
+uses([WithPagination::class]);
 
 // Define state properties
 state([
@@ -21,6 +21,14 @@ state([
     'confirmingDelete' => null,
     'orderBy' => 'created_at',
 ]);
+
+// Reset pagination when filters change
+$updatedNome = function () { $this->resetPage(); };
+$updatedTelefone = function () { $this->resetPage(); };
+$updatedJaTrabalhou = function () { $this->resetPage(); };
+$updatedGenero = function () { $this->resetPage(); };
+$updatedCpf = function () { $this->resetPage(); };
+$updatedOrderBy = function () { $this->resetPage(); };
 
 // Define the pessoas getter method
 $getPessoas = function () {

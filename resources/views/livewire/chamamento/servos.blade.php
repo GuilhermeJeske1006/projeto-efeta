@@ -6,9 +6,9 @@ use App\Models\Pessoa;
 
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
-use function Livewire\Volt\{state, computed, mount, on};
+use function Livewire\Volt\{state, computed, mount, on, uses};
 
-with(WithPagination::class);
+uses([WithPagination::class]);
 
 state([
     'searches' => [], 
@@ -56,6 +56,9 @@ $showNotification = function ($type, $message) {
         'message' => $message,
     ]);
 };
+
+// Reset pagination when filters change
+$updatedSearches = function () { $this->resetPage(); };
 
 // Método para atualizar busca específica por equipe
 $updateSearch = function ($equipeId, $retiroId, $searchTerm) {

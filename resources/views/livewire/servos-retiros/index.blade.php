@@ -5,9 +5,9 @@ use App\Models\Retiro;
 use App\Models\Equipe;
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
-use function Livewire\Volt\{state, computed, mount, on};
+use function Livewire\Volt\{state, computed, mount, on, uses};
 
-with(WithPagination::class);
+uses([WithPagination::class]);
 
 // Define state properties
 state([
@@ -32,9 +32,15 @@ state([
     'listSelectedEquipes' => []
 ]);
 
+// Reset pagination when filters change
+$updatedNome = function () { $this->resetPage(); };
+$updatedTelefone = function () { $this->resetPage(); };
+$updatedJaTrabalhou = function () { $this->resetPage(); };
+$updatedGenero = function () { $this->resetPage(); };
+
 // Mount - buscar retiro pela URL
 mount(function ($retiroId) {
-    
+
     if(auth()->user()->role_id !== 1) {
         abort(403, 'Acesso não autorizado');
     }

@@ -4,9 +4,9 @@ use App\Models\Role;
 use App\Models\User;
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
-use function Livewire\Volt\{state, computed, mount};
+use function Livewire\Volt\{state, computed, mount, uses};
 
-with(WithPagination::class);
+uses([WithPagination::class]);
 
 // Define state properties
 state([
@@ -26,6 +26,9 @@ mount(function () {
     }
 });
 
+// Reset pagination when filters change
+$updatedNome = function () { $this->resetPage(); };
+$updatedTelefone = function () { $this->resetPage(); };
 
 // Define the pessoas getter method
 $getPessoas = function () {

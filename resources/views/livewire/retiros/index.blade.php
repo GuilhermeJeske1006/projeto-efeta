@@ -3,9 +3,9 @@
 use App\Models\Retiro;
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
-use function Livewire\Volt\{state, computed};
+use function Livewire\Volt\{state, computed, uses};
 
-with(WithPagination::class);
+uses([WithPagination::class]);
 
 // Define state properties
 state([
@@ -13,6 +13,9 @@ state([
     'perPage' => 15,
 
 ]);
+
+// Reset pagination when filters change
+$updatedSearch = function () { $this->resetPage(); };
 
 // Define the pessoas getter method
 $getRetiros = function () {

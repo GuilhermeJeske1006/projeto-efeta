@@ -5,9 +5,9 @@ use App\Models\Retiro;
 use App\Models\Equipe;
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
-use function Livewire\Volt\{state, computed, mount};
+use function Livewire\Volt\{state, computed, mount, uses};
 
-with(WithPagination::class);
+uses([WithPagination::class]);
 
 // Define state properties
 state([
@@ -31,6 +31,13 @@ state([
     'listSelectedEquipes' => [],
     'equipe_id' => 14,
 ]);
+
+// Reset pagination when filters change
+$updatedNome = function () { $this->resetPage(); };
+$updatedTelefone = function () { $this->resetPage(); };
+$updatedGenero = function () { $this->resetPage(); };
+$updatedDataNascimentoMinima = function () { $this->resetPage(); };
+$updatedDataNascimentoMaxima = function () { $this->resetPage(); };
 
 // Mount - buscar retiro pela URL
 mount(function ($retiroId) {
