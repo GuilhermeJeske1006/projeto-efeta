@@ -24,6 +24,15 @@ state([
     'orderBy' => 'created_at', // Adiciona o estado para ordenação
 ]);
 
+// Reset pagination when filters change
+$updatedNome = function () { $this->resetPage(); };
+$updatedTelefone = function () { $this->resetPage(); };
+$updatedGenero = function () { $this->resetPage(); };
+$updatedCpf = function () { $this->resetPage(); };
+$updatedDataNascimentoMinima = function () { $this->resetPage(); };
+$updatedDataNascimentoMaxima = function () { $this->resetPage(); };
+$updatedOrderBy = function () { $this->resetPage(); };
+
 // Define the pessoas getter method
 $getPessoas = function () {
     $result = Pessoa::query()
