@@ -48,6 +48,7 @@ class ServosExport implements FromQuery, WithHeadings, WithMapping
         return [
             'Equipe',
             'Nome',
+            'Genero',
             'Telefone Principal',
             'Outros Telefones',
             'Coordenador',
@@ -60,6 +61,7 @@ class ServosExport implements FromQuery, WithHeadings, WithMapping
         return [
             $row->equipe,
             $row->pessoa->nome ?? 'N/A', 
+            $row->pessoa->genero ?? 'N/A',
             $row->pessoa->telefones->first()->numero ?? 'N/A',
             $row->pessoa->telefones->skip(1)->pluck('numero')->implode(' / ') ?? 'N/A',
             $row->is_coordenador ? 'Sim' : 'Não',
