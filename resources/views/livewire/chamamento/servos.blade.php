@@ -83,6 +83,7 @@ $getServos = function () {
             $retiroId = $permissao->retiro_id;
             $searchKey = $equipeId . '_' . $retiroId;
             $searchTerm = $this->searches[$searchKey] ?? '';
+            $statusFilter = $this->searches['status_' . $searchKey] ?? '';
 
             $retiro = \App\Models\Retiro::find($retiroId);
             $equipe = \App\Models\Equipe::find($equipeId);
@@ -98,6 +99,9 @@ $getServos = function () {
                     $q->whereHas('pessoa', function ($query) use ($searchTerm) {
                         $query->where('nome', 'like', '%' . $searchTerm . '%');
                     });
+                })
+                ->when($statusFilter, function ($q) use ($statusFilter) {
+                    $q->where('status_id', $statusFilter);
                 })
                 ->orderByDesc('is_coordenador')
                 ->paginate($this->perPage, ['*'], 'page_' . $equipeId . '_' . $retiroId);
@@ -200,7 +204,7 @@ $exportarTodosCSV = function () {
 
         $fileName = 'todos_servos_' . date('Ymd_His') . '.csv';
 
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\TodosServosExport($userId), $fileName);
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\TodosServosExport($userId, $this->searches), $fileName);
     } catch (\Exception $e) {
         $this->showNotification('error', 'Erro ao exportar CSV: ' . $e->getMessage());
     }
@@ -219,9 +223,12 @@ $exportarCSV = function ($equipeId, $retiroId) {
             throw new \Exception('Você não tem permissão para exportar esta equipe.');
         }
 
+        $searchKey = $equipeId . '_' . $retiroId;
+        $statusFilter = $this->searches['status_' . $searchKey] ?? null;
+
         $fileName = 'servos_equipe_' . $equipeId . '_retiro_' . $retiroId . '_' . date('Ymd_His') . '.csv';
 
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\ServosExport($equipeId, $retiroId), $fileName);
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\ServosExport($equipeId, $retiroId, $statusFilter), $fileName);
     } catch (\Exception $e) {
         $this->showNotification('error', 'Erro ao exportar CSV: ' . $e->getMessage());
     }
@@ -326,12 +333,27 @@ $exportarCSV = function ($equipeId, $retiroId) {
                         >
                     </div>
                 </div>
+                <div class="space-y-2">
+                    <label for="status_filter_{{ $item['search_key'] }}" class="block text-sm font-medium whitespace-nowrap">Filtrar por Status</label>
+                    <div class="relative">
+                    <select 
+                        wire:model.live="searches.status_{{ $item['search_key'] }}"
+                        id="status_filter_{{ $item['search_key'] }}"
+                        class="w-full pl-5 pr-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    >
+                        <option value="">Todos</option>
+                        @foreach ($this->status_chamado as $status)
+                            <option value="{{ $status->id }}">{{ $status->nome }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                </div>
             </div>
         </div>
 
         <div class="w-full p-2 mb-3">
             <div class="flex justify-start">
-            <button 
+            <button
                 class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 wire:click="exportarCSV({{ $item['equipe']->id }}, {{ $item['retiro']->id }})"
             >
