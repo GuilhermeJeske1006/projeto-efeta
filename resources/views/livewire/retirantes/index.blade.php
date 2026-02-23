@@ -297,7 +297,7 @@ $addChamamento = function ($pessoa) {
                         <td class="px-6 py-4 whitespace-nowrap flex items-center">
 
                             @if (
-                                !$pessoa->chamamentos()->whereHas('retiro', function ($query) {
+                                !$pessoa->retiros()->whereHas('retiro', function ($query) {
                                         $query->where('data_inicio', '>', now());
                                     })->exists())
                                 <button wire:click="addChamamento({{ $pessoa }})" class=" mr-3">
