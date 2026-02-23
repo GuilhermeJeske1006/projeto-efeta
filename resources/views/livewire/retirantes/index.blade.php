@@ -22,21 +22,48 @@ state([
     'cpf' => null,
     'confirmingDelete' => null,
     'orderBy' => 'created_at', // Adiciona o estado para ordenação
+    'excluir_ultimo_retiro' => false,
 ]);
 
 // Reset pagination when filters change
-$updatedNome = function () { $this->resetPage(); };
-$updatedTelefone = function () { $this->resetPage(); };
-$updatedGenero = function () { $this->resetPage(); };
-$updatedCpf = function () { $this->resetPage(); };
-$updatedDataNascimentoMinima = function () { $this->resetPage(); };
-$updatedDataNascimentoMaxima = function () { $this->resetPage(); };
-$updatedOrderBy = function () { $this->resetPage(); };
+$updatedNome = function () {
+    $this->resetPage();
+};
+$updatedTelefone = function () {
+    $this->resetPage();
+};
+$updatedGenero = function () {
+    $this->resetPage();
+};
+$updatedCpf = function () {
+    $this->resetPage();
+};
+$updatedDataNascimentoMinima = function () {
+    $this->resetPage();
+};
+$updatedDataNascimentoMaxima = function () {
+    $this->resetPage();
+};
+$updatedOrderBy = function () {
+    $this->resetPage();
+};
+$updatedExcluirUltimoRetiro = function () {
+    $this->resetPage();
+};
 
 // Define the pessoas getter method
 $getPessoas = function () {
     $result = Pessoa::query()
         ->where('pessoas.tipo_pessoa_id', 3)
+        ->when($this->excluir_ultimo_retiro, function ($query) {
+            $ultimoRetiro = \App\Models\Retiro::where('data_inicio', '>=', now())->orderBy('data_inicio', 'asc')->first();
+            if ($ultimoRetiro) {
+                return $query->whereDoesntHave('retiros', function ($q) use ($ultimoRetiro) {
+                    $q->where('retiro_id', $ultimoRetiro->id);
+                });
+            }
+            return $query;
+        })
         ->when($this->data_nascimento_minima && $this->data_nascimento_maxima, function ($query) {
             return $query->whereBetween('pessoas.data_nascimento', [$this->data_nascimento_minima, $this->data_nascimento_maxima]);
         })
@@ -66,7 +93,7 @@ $getPessoas = function () {
                 'updated_at' => 'pessoas.updated_at',
                 default => 'pessoas.created_at',
             },
-            'asc'
+            'asc',
         )
         ->paginate($this->perPage);
 
@@ -92,12 +119,8 @@ $delete = function ($id) {
 $addChamamento = function ($pessoa) {
     $retiroProximo = \App\Models\Retiro::where('data_inicio', '>', now())->orderBy('data_inicio', 'asc')->first();
     if ($retiroProximo) {
-        $exists = \DB::table('pessoa_retiros')
-            ->where('retiro_id', $retiroProximo->id)
-            ->where('equipe_id', 14)
-            ->where('pessoa_id', $pessoa['id'])
-            ->exists();
-        
+        $exists = \DB::table('pessoa_retiros')->where('retiro_id', $retiroProximo->id)->where('equipe_id', 14)->where('pessoa_id', $pessoa['id'])->exists();
+
         if (!$exists) {
             \DB::table('pessoa_retiros')->insert([
                 'retiro_id' => $retiroProximo->id,
@@ -108,7 +131,6 @@ $addChamamento = function ($pessoa) {
                 'tipo_id' => 3,
             ]);
             session()->flash('message', $pessoa['nome'] . 'Adicionado ao chamamento com sucesso!');
-
         } else {
             session()->flash('message', 'Este retirante já está no chamamento do próximo retiro.');
         }
@@ -192,15 +214,17 @@ $addChamamento = function ($pessoa) {
             </div>
             <div class="space-y-2">
                 <label for="cpf" class="block text-sm font-medium whitespace-nowrap">CPF</label>
-                <input 
-                    wire:model.live.debounce.300ms="cpf" 
-                    type="text" 
-                    id="cpf"
-                    placeholder="000.000.000-00" 
-                    class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                >
+                <input wire:model.live.debounce.300ms="cpf" type="text" id="cpf" placeholder="000.000.000-00"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
             </div>
-           
+            <div class="space-y-2 flex items-end">
+                <label class="flex items-center space-x-2 cursor-pointer">
+                    <input wire:model.live="excluir_ultimo_retiro" type="checkbox"
+                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                    <span class="text-sm font-medium">Excluir pessoas atreladas ao proximo retiro</span>
+                </label>
+            </div>
+
         </div>
 
         <!-- Botões de Ação -->
@@ -240,7 +264,8 @@ $addChamamento = function ($pessoa) {
             <thead class="bg-gray-100">
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefones</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefones
+                    </th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase  ">Gênero
                     </th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data
@@ -252,28 +277,33 @@ $addChamamento = function ($pessoa) {
             </thead>
             <tbody class="divide-y divide-gray-200">
                 @foreach ($this->getPessoas() as $pessoa)
-               
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->nome }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            @if(!empty($pessoa->telefones))
-                            {{ $pessoa->telefones[0] }} <span class="text-sm text-gray-500">(Principal)</span>
-                            @if(count($pessoa->telefones) > 1)
-                                / {{ implode(' / ', array_slice($pessoa->telefones, 1)) }}
+                            @if (!empty($pessoa->telefones))
+                                {{ $pessoa->telefones[0] }} <span class="text-sm text-gray-500">(Principal)</span>
+                                @if (count($pessoa->telefones) > 1)
+                                    / {{ implode(' / ', array_slice($pessoa->telefones, 1)) }}
+                                @endif
+                            @else
+                                -
                             @endif
-                        @else
-                            -
-                        @endif
 
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->genero }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ \Carbon\Carbon::parse($pessoa->data_nascimento)->format('d/m/Y') }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {{ \Carbon\Carbon::parse($pessoa->data_nascimento)->format('d/m/Y') }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->cpf }}</td>
                         <td class="px-6 py-4 whitespace-nowrap flex items-center">
-                            
-                            <button wire:click="addChamamento({{ $pessoa }})" class=" mr-3">
-                                <flux:icon.arrow-up-left/>
-                            </button>
+
+                            @if (
+                                !$pessoa->chamamentos()->whereHas('retiro', function ($query) {
+                                        $query->where('data_inicio', '>', now());
+                                    })->exists())
+                                <button wire:click="addChamamento({{ $pessoa }})" class=" mr-3">
+                                    <flux:icon.arrow-up-left />
+                                </button>
+                            @endif
                             <a href="{{ route('servos.show', $pessoa) }}"
                                 class="text-blue-600 hover:text-blue-900 mr-3">
                                 <flux:icon.eye />
@@ -283,11 +313,12 @@ $addChamamento = function ($pessoa) {
                                 <flux:icon.pencil />
                             </a>
                             @if (auth()->user()->role_id === 1)
-                            <button wire:click="$set('confirmingDelete', {{ $pessoa->id }})" class="text-red-600 hover:text-red-900">
-                                <flux:icon.trash />
-                            </button>
+                                <button wire:click="$set('confirmingDelete', {{ $pessoa->id }})"
+                                    class="text-red-600 hover:text-red-900">
+                                    <flux:icon.trash />
+                                </button>
                             @endif
-                           
+
                         </td>
                     </tr>
                 @endforeach
@@ -308,18 +339,23 @@ $addChamamento = function ($pessoa) {
                 <div class="fixed inset-0 transition-opacity">
                     <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
                 </div>
-                <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
+                <div
+                    class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
                     <div class="px-4 py-5 sm:p-6">
-                        <h3 class="text-lg leading-6 font-medium  text-gray-700 dark:text-gray-300">Confirmar Exclusão</h3>
+                        <h3 class="text-lg leading-6 font-medium  text-gray-700 dark:text-gray-300">Confirmar Exclusão
+                        </h3>
                         <div class="mt-2">
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Tem certeza de que deseja excluir este retirante? Esta ação não pode ser desfeita.</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Tem certeza de que deseja excluir este
+                                retirante? Esta ação não pode ser desfeita.</p>
                         </div>
                     </div>
                     <div class="px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                        <button wire:click="delete({{ $confirmingDelete }})" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 sm:ml-3 sm:w-auto sm:text-sm">
+                        <button wire:click="delete({{ $confirmingDelete }})"
+                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 sm:ml-3 sm:w-auto sm:text-sm">
                             Confirmar
                         </button>
-                        <button wire:click="$set('confirmingDelete', null)" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        <button wire:click="$set('confirmingDelete', null)"
+                            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                             Cancelar
                         </button>
                     </div>
