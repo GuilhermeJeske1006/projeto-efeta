@@ -58,7 +58,9 @@ $getPessoas = function () {
         ->when($this->excluir_ultimo_retiro, function ($query) {
             $proximoRetiro = \App\Models\Retiro::where('data_inicio', '>', now())->orderBy('data_inicio', 'asc')->first();
             if ($proximoRetiro) {
-                return $query->whereDoesntHave('pessoa_retiros');
+                $query->whereNotIn('pessoas.id', function ($subQuery) use ($proximoRetiro) {
+                    $subQuery->select('pessoa_id')->from('pessoa_retiros')->where('retiro_id', $proximoRetiro->id);
+                });
             }
             return $query;
         })
@@ -112,6 +114,15 @@ $delete = function ($id) {
         session()->flash('message', 'Retirante excluída com sucesso!');
     }
     $this->confirmingDelete = null;
+};
+
+$filtroSeEstaNoRetiro = function ($id) {
+    $retiroProximo = \App\Models\Retiro::where('data_inicio', '>', now())->orderBy('data_inicio', 'asc')->first();
+    if (!$retiroProximo) {
+        return true; // No upcoming retiro found, so filter passes
+    }
+    $exists = \DB::table('pessoa_retiros')->where('retiro_id', $retiroProximo->id)->where('equipe_id', 14)->where('pessoa_id', $id)->exists();
+    return !$exists;
 };
 
 $addChamamento = function ($pessoa) {
@@ -294,10 +305,7 @@ $addChamamento = function ($pessoa) {
                         <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->cpf }}</td>
                         <td class="px-6 py-4 whitespace-nowrap flex items-center">
 
-                            @if (
-                                !$pessoa->retiros()->whereHas('retiro', function ($query) {
-                                        $query->where('data_inicio', '>', now());
-                                    })->exists())
+                            @if ($this->filtroSeEstaNoRetiro($pessoa['id']))
                                 <button wire:click="addChamamento({{ $pessoa }})" class=" mr-3">
                                     <flux:icon.arrow-up-left />
                                 </button>
