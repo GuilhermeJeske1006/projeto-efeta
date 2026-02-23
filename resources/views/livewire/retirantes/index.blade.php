@@ -56,11 +56,9 @@ $getPessoas = function () {
     $result = Pessoa::query()
         ->where('pessoas.tipo_pessoa_id', 3)
         ->when($this->excluir_ultimo_retiro, function ($query) {
-            $ultimoRetiro = \App\Models\Retiro::where('data_inicio', '>=', now())->orderBy('data_inicio', 'asc')->first();
-            if ($ultimoRetiro) {
-                return $query->whereDoesntHave('retiros', function ($q) use ($ultimoRetiro) {
-                    $q->where('retiro_id', $ultimoRetiro->id);
-                });
+            $proximoRetiro = \App\Models\Retiro::where('data_inicio', '>', now())->orderBy('data_inicio', 'asc')->first();
+            if ($proximoRetiro) {
+                return $query->whereDoesntHave('pessoa_retiros');
             }
             return $query;
         })
