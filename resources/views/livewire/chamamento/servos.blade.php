@@ -93,7 +93,7 @@ $getServos = function () {
                 ->where('equipe_id', $equipeId)
                 ->where('retiro_id', $retiroId)
                 ->with(['pessoa' => function ($query) {
-                    $query->with('telefones');
+                    $query->with(['telefones', 'enderecos']);
                 }])
                 ->when($searchTerm, function ($q) use ($searchTerm) {
                     $q->whereHas('pessoa', function ($query) use ($searchTerm) {
@@ -112,6 +112,7 @@ $getServos = function () {
                 $pessoaRetiro->id = $pessoaRetiro->pessoa->id ?? null;
                 $pessoaRetiro->genero = $pessoaRetiro->pessoa->genero ?? null;
                 $pessoaRetiro->telefones = $pessoaRetiro->pessoa->telefones->pluck('numero')->toArray() ?? [];
+                $pessoaRetiro->cidade = $pessoaRetiro->pessoa->enderecos->first()->cidade ?? null;
                 return $pessoaRetiro;
             });
 
@@ -369,6 +370,7 @@ $exportarCSV = function ($equipeId, $retiroId) {
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefone</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Genero</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cidade</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
                     </tr>
@@ -398,7 +400,10 @@ $exportarCSV = function ($equipeId, $retiroId) {
                                 {{ $pessoa['genero'] }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <select 
+                                {{ $pessoa['cidade'] ?? '-' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <select
                                     class="border w-full rounded px-2 py-1 md:px-2 md:py-1 text-base md:text-sm"
                                     wire:change="updateStatusChamado({{ $pessoa['id'] }}, $event.target.value, {{ $item['retiro']->id }})"
                                     x-data

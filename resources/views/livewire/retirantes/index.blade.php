@@ -20,6 +20,7 @@ state([
     'telefone' => null,
     'nome' => null,
     'cpf' => null,
+    'cidade' => null,
     'confirmingDelete' => null,
     'orderBy' => 'created_at', // Adiciona o estado para ordenação
     'excluir_ultimo_retiro' => false,
@@ -38,6 +39,9 @@ $updatedGenero = function () {
 $updatedCpf = function () {
     $this->resetPage();
 };
+$updatedCidade = function () {
+    $this->resetPage();
+};
 $updatedDataNascimentoMinima = function () {
     $this->resetPage();
 };
@@ -54,6 +58,7 @@ $updatedExcluirUltimoRetiro = function () {
 // Define the pessoas getter method
 $getPessoas = function () {
     $result = Pessoa::query()
+        ->with('enderecos')
         ->where('pessoas.tipo_pessoa_id', 3)
         ->when($this->excluir_ultimo_retiro, function ($query) {
             $proximoRetiro = \App\Models\Retiro::where('data_inicio', '>', now())->orderBy('data_inicio', 'asc')->first();
@@ -86,6 +91,11 @@ $getPessoas = function () {
         })
         ->when($this->nome, function ($query) {
             return $query->where('pessoas.nome', 'like', '%' . $this->nome . '%');
+        })
+        ->when($this->cidade, function ($query) {
+            return $query->whereHas('enderecos', function ($q) {
+                $q->where('cidade', 'like', '%' . $this->cidade . '%');
+            });
         })
         ->orderBy(
             match ($this->orderBy) {
@@ -226,6 +236,11 @@ $addChamamento = function ($pessoa) {
                 <input wire:model.live.debounce.300ms="cpf" type="text" id="cpf" placeholder="000.000.000-00"
                     class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
             </div>
+            <div class="space-y-2">
+                <label for="cidade" class="block text-sm font-medium whitespace-nowrap">Cidade</label>
+                <input wire:model.live.debounce.300ms="cidade" type="text" id="cidade" placeholder="Cidade"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
             <div class="space-y-2 flex items-end">
                 <label class="flex items-center space-x-2 cursor-pointer">
                     <input wire:model.live="excluir_ultimo_retiro" type="checkbox"
@@ -280,6 +295,8 @@ $addChamamento = function ($pessoa) {
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data
                         nascimento</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CPF</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cidade
+                    </th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações
                     </th>
                 </tr>
@@ -303,6 +320,7 @@ $addChamamento = function ($pessoa) {
                         <td class="px-6 py-4 whitespace-nowrap">
                             {{ \Carbon\Carbon::parse($pessoa->data_nascimento)->format('d/m/Y') }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->cpf }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->enderecos->first()->cidade ?? '-' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap flex items-center">
 
                             @if ($this->filtroSeEstaNoRetiro($pessoa['id']))
