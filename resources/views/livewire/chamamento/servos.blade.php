@@ -317,7 +317,7 @@ $exportarCSV = function ($equipeId, $retiroId) {
             Exportar Todos CSV
         </button>
         </div>
-    </div>
+    </div> 
 
     @foreach ($this->getServos() as $item)
     <div class="mb-8">
