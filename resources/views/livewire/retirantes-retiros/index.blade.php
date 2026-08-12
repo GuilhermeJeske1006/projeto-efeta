@@ -30,6 +30,8 @@ state([
     'nomeEquipe' => '',
     'listSelectedEquipes' => [],
     'equipe_id' => 14,
+    'equipeGenero' => null,
+    'equipeCidade' => null,
 ]);
 
 // Reset pagination when filters change
@@ -38,6 +40,8 @@ $updatedTelefone = function () { $this->resetPage(); };
 $updatedGenero = function () { $this->resetPage(); };
 $updatedDataNascimentoMinima = function () { $this->resetPage(); };
 $updatedDataNascimentoMaxima = function () { $this->resetPage(); };
+$updatedEquipeGenero = function () { $this->listSelectedEquipes = $this->servosEquipe->toArray(); };
+$updatedEquipeCidade = function () { $this->listSelectedEquipes = $this->servosEquipe->toArray(); };
 
 // Mount - buscar retiro pela URL
 mount(function ($retiroId) {
@@ -71,7 +75,21 @@ $servosEquipe = computed(function () {
             $join->on('telefones.pessoa_id', '=', 'pessoas.id')
                  ->where('telefones.is_principal', true);
         })
-        ->select('pessoas.*', 'telefones.numero as telefone_principal')
+        ->select('pessoas.*', 'telefones.numero as telefone_principal', \DB::raw('(select enderecos.cidade from enderecos_pessoas
+                inner join enderecos on enderecos.id = enderecos_pessoas.endereco_id
+                where enderecos_pessoas.pessoa_id = pessoas.id limit 1) as cidade'))
+        ->when($this->equipeGenero, function ($query) {
+            return $query->where('pessoas.genero', $this->equipeGenero);
+        })
+        ->when($this->equipeCidade, function ($query) {
+            return $query->whereExists(function ($sub) {
+                $sub->select(\DB::raw(1))
+                    ->from('enderecos_pessoas')
+                    ->join('enderecos', 'enderecos.id', '=', 'enderecos_pessoas.endereco_id')
+                    ->whereColumn('enderecos_pessoas.pessoa_id', 'pessoas.id')
+                    ->where('enderecos.cidade', 'like', '%' . $this->equipeCidade . '%');
+            });
+        })
         ->orderBy('pessoas.nome')
         ->get();
 });
@@ -462,6 +480,31 @@ $updatedListSelectedEquipes = function () {
             </div>
         </div>
 
+        <!-- Filtros da equipe -->
+        <div class="bg-zinc-50 border border-zinc-200 dark:border-zinc-700 dark:bg-zinc-900 rounded-lg shadow-sm p-4 mb-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label for="equipeGenero" class="block text-sm font-medium">Gênero</label>
+                    <flux:select wire:model.live.debounce.300ms="equipeGenero" id="equipeGenero" class="w-full">
+                        <flux:select.option value="">Todos</flux:select.option>
+                        @foreach ($generos as $item)
+                            <flux:select.option value="{{ $item }}">{{ $item }}</flux:select.option>
+                        @endforeach
+                    </flux:select>
+                </div>
+                <div class="space-y-2">
+                    <label for="equipeCidade" class="block text-sm font-medium">Cidade</label>
+                    <input
+                        wire:model.live.debounce.300ms="equipeCidade"
+                        type="text"
+                        id="equipeCidade"
+                        placeholder="Cidade"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    >
+                </div>
+            </div>
+        </div>
+
         <!-- Indicador de carregamento -->
         <div wire:loading.flex wire:target="selectedEquipe" class="items-center justify-center py-8 text-gray-500">
             <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
@@ -477,6 +520,9 @@ $updatedListSelectedEquipes = function () {
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefone Principal</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gênero</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cidade</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CPF</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
                     </tr>
                 </thead>
@@ -486,6 +532,9 @@ $updatedListSelectedEquipes = function () {
                         <tr wire:key="servo-equipe-{{ $pessoa->id }}">
                             <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->nome }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->telefone_principal ?? 'Sem telefone' }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->genero }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->cidade ?? '-' }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $pessoa->cpf }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <button 
                                     wire:click="removeRetiranteRetiro({{ $pessoa->id }})" 

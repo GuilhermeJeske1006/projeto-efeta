@@ -21,6 +21,7 @@ state([
     'equipes' => [],
     'usuarios' => [],
     'status_chamado' => [],
+    'generos' => ['Masculino', 'Feminino', 'Outro'],
     'notification' => [
         'show' => false,
         'type' => '',
@@ -84,6 +85,8 @@ $getServos = function () {
             $searchKey = $equipeId . '_' . $retiroId;
             $searchTerm = $this->searches[$searchKey] ?? '';
             $statusFilter = $this->searches['status_' . $searchKey] ?? '';
+            $generoFilter = $this->searches['genero_' . $searchKey] ?? '';
+            $cidadeFilter = $this->searches['cidade_' . $searchKey] ?? '';
 
             $retiro = \App\Models\Retiro::find($retiroId);
             $equipe = \App\Models\Equipe::find($equipeId);
@@ -102,6 +105,16 @@ $getServos = function () {
                 })
                 ->when($statusFilter, function ($q) use ($statusFilter) {
                     $q->where('status_id', $statusFilter);
+                })
+                ->when($generoFilter, function ($q) use ($generoFilter) {
+                    $q->whereHas('pessoa', function ($query) use ($generoFilter) {
+                        $query->where('genero', $generoFilter);
+                    });
+                })
+                ->when($cidadeFilter, function ($q) use ($cidadeFilter) {
+                    $q->whereHas('pessoa.enderecos', function ($query) use ($cidadeFilter) {
+                        $query->where('cidade', 'like', '%' . $cidadeFilter . '%');
+                    });
                 })
                 ->orderByDesc('is_coordenador')
                 ->paginate($this->perPage, ['*'], 'page_' . $equipeId . '_' . $retiroId);
@@ -348,6 +361,29 @@ $exportarCSV = function ($equipeId, $retiroId) {
                         @endforeach
                     </select>
                 </div>
+                </div>
+                <div class="space-y-2">
+                    <label for="genero_filter_{{ $item['search_key'] }}" class="block text-sm font-medium whitespace-nowrap">Gênero</label>
+                    <select
+                        wire:model.live="searches.genero_{{ $item['search_key'] }}"
+                        id="genero_filter_{{ $item['search_key'] }}"
+                        class="w-full pl-5 pr-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    >
+                        <option value="">Todos</option>
+                        @foreach ($generos as $genero)
+                            <option value="{{ $genero }}">{{ $genero }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label for="cidade_filter_{{ $item['search_key'] }}" class="block text-sm font-medium whitespace-nowrap">Cidade</label>
+                    <input
+                        wire:model.live.debounce.300ms="searches.cidade_{{ $item['search_key'] }}"
+                        type="text"
+                        id="cidade_filter_{{ $item['search_key'] }}"
+                        placeholder="Cidade"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    >
                 </div>
             </div>
         </div>
