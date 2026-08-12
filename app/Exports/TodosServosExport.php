@@ -55,6 +55,7 @@ class TodosServosExport implements FromQuery, WithHeadings, WithMapping
         return [
             'Equipe',
             'Nome',
+            'CPF',
             'Genero',
             'Cidade',
             'Telefone Principal',
@@ -69,6 +70,7 @@ class TodosServosExport implements FromQuery, WithHeadings, WithMapping
         return [
             $row->equipe,
             $row->pessoa->nome ?? 'N/A',
+            $row->pessoa->cpf ?? 'N/A',
             $row->pessoa->genero ?? 'N/A',
             $row->pessoa->enderecos->first()->cidade ?? 'N/A',
             $row->pessoa->telefones->first()->numero ?? 'N/A',

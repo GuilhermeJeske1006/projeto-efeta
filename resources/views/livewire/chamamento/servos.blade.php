@@ -124,6 +124,7 @@ $getServos = function () {
                 $pessoaRetiro->nome = $pessoaRetiro->pessoa->nome ?? null;
                 $pessoaRetiro->id = $pessoaRetiro->pessoa->id ?? null;
                 $pessoaRetiro->genero = $pessoaRetiro->pessoa->genero ?? null;
+                $pessoaRetiro->cpf = $pessoaRetiro->pessoa->cpf ?? null;
                 $pessoaRetiro->telefones = $pessoaRetiro->pessoa->telefones->pluck('numero')->toArray() ?? [];
                 $pessoaRetiro->cidade = $pessoaRetiro->pessoa->enderecos->first()->cidade ?? null;
                 return $pessoaRetiro;
@@ -407,6 +408,7 @@ $exportarCSV = function ($equipeId, $retiroId) {
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefone</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Genero</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cidade</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CPF</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
                     </tr>
@@ -439,6 +441,9 @@ $exportarCSV = function ($equipeId, $retiroId) {
                                 {{ $pessoa['cidade'] ?? '-' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
+                                {{ $pessoa['cpf'] ?? '-' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
                                 <select
                                     class="border w-full rounded px-2 py-1 md:px-2 md:py-1 text-base md:text-sm"
                                     wire:change="updateStatusChamado({{ $pessoa['id'] }}, $event.target.value, {{ $item['retiro']->id }})"
@@ -463,7 +468,7 @@ $exportarCSV = function ($equipeId, $retiroId) {
 
                     @if ($item['pessoas']->isEmpty())
                         <tr>
-                            <td colspan="3" class="px-6 py-4 text-center text-gray-500">
+                            <td colspan="7" class="px-6 py-4 text-center text-gray-500">
                                 @if($item['search_term'])
                                     Nenhum registro encontrado para "{{ $item['search_term'] }}"
                                 @else
